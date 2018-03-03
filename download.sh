@@ -1,0 +1,11 @@
+cd dataset
+wget 'http://143.107.183.175:22980/download.php?file=embeddings/word2vec/cbow_s50.zip'
+wget 'http://143.107.183.175:22980/download.php?file=embeddings/word2vec/cbow_s100.zip'
+wget 'http://143.107.183.175:22980/download.php?file=embeddings/word2vec/cbow_s300.zip'
+wget 'http://143.107.183.175:22980/download.php?file=embeddings/word2vec/cbow_s600.zip'
+wget 'http://143.107.183.175:22980/download.php?file=embeddings/word2vec/cbow_s1000.zip'
+wget 'http://143.107.183.175:22980/download.php?file=embeddings/word2vec/skip_s50.zip'
+wget 'http://143.107.183.175:22980/download.php?file=embeddings/word2vec/skip_s100.zip'
+wget 'http://143.107.183.175:22980/download.php?file=embeddings/word2vec/skip_s300.zip'
+wget 'http://143.107.183.175:22980/download.php?file=embeddings/word2vec/skip_s600.zip'
+wget 'http://143.107.183.175:22980/download.php?file=embeddings/word2vec/skip_s1000.zip'
