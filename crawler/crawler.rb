@@ -19,5 +19,3 @@ for i in 0..2000000
 	linkTest = "#{linkPrefix}#{i}"
 	`curl -sLg "#{linkTest}" > "rawData/#{i%1000}/#{i}.html"`
 end
-
-`tar -cvf rawData.tar rawData`
