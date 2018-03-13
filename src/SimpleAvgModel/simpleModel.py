@@ -74,7 +74,7 @@ def simple_model(input_shape, nCategories):
     return model
 
 
-X_train_avg = vector_sentence_to_avg(X_train, fake_nCategories)
+X_train_avg = vector_sentence_to_avg(X_train, wordEmbedModel)
 
 model = simple_model(X_train_avg.shape, fake_nCategories)
 model.summary()

@@ -8,4 +8,4 @@ Desenvolvimento de ferramenta para classificação de questões em múltiplos as
 - Estudar IRT (Item Response Theory)
 - Desenvolver ferramenta de classificação por assunto
 - Desenvolver ferramenta de classificação por dificuldade
-- Integração com plataforma educacional [Paperx](www.paperx.com.br)
+- Integração com plataforma educacional [Paperx](https://paperx.com.br/)
