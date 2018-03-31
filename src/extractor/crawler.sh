@@ -9,6 +9,7 @@ for (( i=2017; i>1997; i--))
 linkPrefix=$linkPrefix"&id="
 
 echo "Creating folders"
+cd ../../dataset/
 mkdir rawData
 cd rawData
 for (( i=0; i<1000; i++))
