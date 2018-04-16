@@ -1,23 +1,24 @@
-import pandas as pd
 import json
 import glob
 import os
+import pandas as pd
 from sklearn.model_selection import train_test_split
 
 
 class RotaDosConcursos:
 
-    def __init__(self,  random_state=1, subset='all'):
+    def __init__(self, random_state=1, subset='all'):
         """
         subset : 'train' or 'test', 'all', optional
             Select the dataset to load: 'train' for the training set, 'test'
             for the test set, 'all' for both, with shuffled ordering.
-            
+
         random_state : numpy random number generator or seed integer
             Used to shuffle the dataset.
         """
 
-        csv_path = '../../dataset/rota_dos_concursos.csv'
+        my_path = os.path.abspath(os.path.dirname(__file__))
+        csv_path = os.path.join(my_path, '../../dataset/rota_dos_concursos.csv')
 
         if os.path.isfile(csv_path):
             self.df = pd.read_csv(csv_path, encoding='UTF-8', index_col=0)
@@ -25,9 +26,9 @@ class RotaDosConcursos:
             texts = []
             labels = []
             ids = []
-            
+
             for filename in glob.iglob('../../dataset/rawData/**/*.json', recursive=True):
-                filename = filename.replace("\\",'/')
+                filename = filename.replace("\\", '/')
 
                 try:
                     data = json.load(open(filename), encoding='UTF-8')
@@ -56,7 +57,7 @@ class RotaDosConcursos:
         if subset == 'train':
             self.df, _ = train_test_split(self.df, test_size=0.2, random_state=random_state)
             self._one_hot, _ = train_test_split(self._one_hot, test_size=0.2, random_state=random_state)
-            
+
         if subset == 'test':
             _, self.df = train_test_split(self.df, test_size=0.2, random_state=random_state)
             _, self._one_hot = train_test_split(self._one_hot, test_size=0.2, random_state=random_state)
@@ -64,7 +65,9 @@ class RotaDosConcursos:
 
     @property
     def target_names(self):
-        return self.df['label'].unique()
+        target_names = self.df['label'].unique()
+        target_names.sort()
+        return target_names
 
 
     @property
@@ -76,7 +79,7 @@ class RotaDosConcursos:
     def text(self):
         return self.df['text']
 
-    
+
     @property
     def target_one_hot(self):
         return self._one_hot
