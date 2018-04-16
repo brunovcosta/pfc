@@ -1,24 +1,15 @@
 import numpy as np
 import keras
 from gensim.models import KeyedVectors
+import sys
+sys.path.insert(0, '../../datasetAPI')
+import datasetAPI
 
 
-def convert_to_one_hot(Y, nCategories):
-    pass
+trainObj = datasetAPI.RotaDosConcursos(subset='train')
+testObj = datasetAPI.RotaDosConcursos(subset='test')
 
-
-def loadData(path):
-    pass
-
-
-fake_path = "BaixarDataset"
-fake_nCategories = 40
-
-X_train, Y_train = loadData(fake_path)
-X_test, Y_test = loadData(fake_path)
-
-Y_oh_train = convert_to_one_hot(Y_train, fake_nCategories)
-Y_oh_test = convert_to_one_hot(Y_test, fake_nCategories)
+nCategories = len(trainObj.target_names)
 
 
 def max_word_length(X):
@@ -26,8 +17,8 @@ def max_word_length(X):
     return max(splittedXlen)
 
 
-nFeaturesPerWord = 300
-wordEmbedPath = '../../dataset/glove/glove_s{}.txt'.format(str(nFeaturesPerWord))
+nFeaturesPerWord = 50
+wordEmbedPath = '../../../dataset/glove/glove_s{}.txt'.format(str(nFeaturesPerWord))
 wordEmbedModel = KeyedVectors.load_word2vec_format(wordEmbedPath, unicode_errors="ignore")
 
 wordEmbedModel.word_vec('casa')
@@ -42,7 +33,7 @@ def sentence_to_avg(sentence, wordEmbedModel):
     avg -- average vector encoding information about the sentence, numpy-array
     """
 
-    words = sentence.lower().split()    # !!!!!!!!Revisar lower para palavras do Pt
+    words = sentence.lower().split()
 
     nFeaturesPerWord = len(wordEmbedModel.word_vec('casa'))
 
@@ -74,26 +65,27 @@ def simple_model(input_shape, nCategories):
     return model
 
 
-X_train_avg = vector_sentence_to_avg(X_train, wordEmbedModel)
+X_train_avg = vector_sentence_to_avg(trainObj.text, wordEmbedModel)
 
-model = simple_model(X_train_avg.shape, fake_nCategories)
+model = simple_model(X_train_avg.shape, nCategories)
 model.summary()
 
 model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
 
-model.fit(X_train_avg, Y_oh_train, epochs=50, batch_size=32, shuffle=True)
+model.fit(X_train_avg, trainObj.target_one_hot, epochs=50, batch_size=32, shuffle=True)
 
-loss, acc = model.evaluate(X_train_avg, Y_oh_test)
+loss, acc = model.evaluate(X_train_avg, trainObj.target_one_hot)
 print("\nTrain accuracy = ", acc)
 
 
-def label_to_category(categoryNum):
-    pass
+target_names = trainObj.target_names
+def label_to_category(target_names, categoryNum):
+    return target_names[categoryNum]
 
 
 pred = model.predict(X_train_avg)
 for i in range(len(X_train_avg)):
     categoryNum = np.argmax(pred[i])
-    if(categoryNum != np.argmax(Y_oh_train[i])):
+    if categoryNum != np.argmax(Y_oh_train[i]):
         print("\n\n Text:\n", X_train[i])
-        print('\nExpected category:' + Y_train[i] + ' prediction: ' + label_to_category(categoryNum).strip())
+        print('\nExpected category:' + trainObj.target.iloc[i] + ' prediction: ' + label_to_category(categoryNum).strip())
