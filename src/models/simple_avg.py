@@ -1,91 +1,103 @@
 import numpy as np
 import keras
 from gensim.models import KeyedVectors
-import sys
-sys.path.insert(0, '../../datasetAPI')
-import datasetAPI
+from ..datasetAPI import RotaDosConcursos
 
 
-trainObj = datasetAPI.RotaDosConcursos(subset='train')
-testObj = datasetAPI.RotaDosConcursos(subset='test')
+class SimpleAvg:
+    def max_word_length(X):
+        splittedXlen = map(lambda x: len(x.split()), X)
+        return max(splittedXlen)
 
-nCategories = len(trainObj.target_names)
+    def sentence_to_avg(sentence, wordEmbedModel):
+        """
+        Converts a sentence (string) into a list of words (strings). Extracts
+        the word2Vec representation of each word
+        and averages its value into a single vector encoding the meaning of the
+        sentence.
 
+        Returns:
+        avg -- average vector encoding information about the sentence,
+        numpy-array
+        """
 
-def max_word_length(X):
-    splittedXlen = map(lambda x: len(x.split()), X)
-    return max(splittedXlen)
+        words = sentence.lower().split()
 
+        nFeaturesPerWord = len(wordEmbedModel.word_vec('casa'))
 
-nFeaturesPerWord = 50
-wordEmbedPath = '../../../dataset/glove/glove_s{}.txt'.format(str(nFeaturesPerWord))
-wordEmbedModel = KeyedVectors.load_word2vec_format(wordEmbedPath, unicode_errors="ignore")
+        avg = np.zeros((nFeaturesPerWord,))
 
-wordEmbedModel.word_vec('casa')
+        for w in words:
+            avg += wordEmbedModel.word_vec(w)  # !!!!!!!!!!!Adicionar <UNK> ao vocabulario (media de todas as palavras?)
+        avg = avg / len(words)
 
+        return avg
 
-def sentence_to_avg(sentence, wordEmbedModel):
-    """
-    Converts a sentence (string) into a list of words (strings). Extracts the word2Vec representation of each word
-    and averages its value into a single vector encoding the meaning of the sentence.
+    def vector_sentence_to_avg(self, wordEmbedModel):
+        X = []
 
-    Returns:
-    avg -- average vector encoding information about the sentence, numpy-array
-    """
+        for sentence in self.trainObj.text:
+            X.append(self.sentence_to_avg(sentence, wordEmbedModel))
 
-    words = sentence.lower().split()
+        return X
 
-    nFeaturesPerWord = len(wordEmbedModel.word_vec('casa'))
+    def simple_model(input_shape, nCategories):
+        X_input = keras.layers.Input(input_shape)
 
-    avg = np.zeros((nFeaturesPerWord,))
+        X = keras.layers.Dense(nCategories, name='fc')(X_input)
+        X = keras.layers.Activation('softmax')(X)
+        model = keras.models.Model(
+            inputs=X_input,
+            outputs=X,
+            name='simple_model')
 
-    for w in words:
-        avg += wordEmbedModel.word_vec(w)  # !!!!!!!!!!!Adicionar <UNK> ao vocabulario (media de todas as palavras?)
-    avg = avg / len(words)
+        return model
 
-    return avg
+    def label_to_category(target_names, categoryNum):
+        return target_names[categoryNum]
 
+    def __init__(self):
+        self.trainObj = RotaDosConcursos(subset='train')
+        self.testObj = RotaDosConcursos(subset='test')
 
-def vector_sentence_to_avg(X_sentences, wordEmbedModel):
-    X = []
+        nCategories = len(self.trainObj.target_names)
 
-    for sentence in X_sentences:
-        X.append(sentence_to_avg(sentence, wordEmbedModel))
+        self.nFeaturesPerWord = 50
+        wordEmbedPath = '../../../dataset/glove/glove_s{}.txt'.format(
+            str(self.nFeaturesPerWord))
+        wordEmbedModel = KeyedVectors.load_word2vec_format(
+            wordEmbedPath,
+            unicode_errors="ignore")
 
-    return X
+        wordEmbedModel.word_vec('casa')
 
+        X_train_avg = self.vector_sentence_to_avg(
+            self,
+            wordEmbedModel)
 
-def simple_model(input_shape, nCategories):
-    X_input = keras.layers.Input(input_shape)
+        model = self.simple_model(X_train_avg.shape, nCategories)
+        model.summary()
 
-    X = keras.layers.Dense(nCategories, name='fc')(X_input)
-    X = keras.layers.Activation('softmax')(X)
-    model = keras.models.Model(inputs=X_input, outputs=X, name='simple_model')
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer='adam',
+            metrics=['accuracy'])
 
-    return model
+        model.fit(
+            X_train_avg,
+            self.trainObj.target_one_hot,
+            epochs=50,
+            batch_size=32,
+            shuffle=True)
 
+        loss, acc = model.evaluate(X_train_avg, self.trainObj.target_one_hot)
+        print("\nTrain accuracy = ", acc)
 
-X_train_avg = vector_sentence_to_avg(trainObj.text, wordEmbedModel)
+        self.target_names = self.trainObj.target_names
 
-model = simple_model(X_train_avg.shape, nCategories)
-model.summary()
-
-model.compile(loss='categorical_crossentropy', optimizer='adam', metrics=['accuracy'])
-
-model.fit(X_train_avg, trainObj.target_one_hot, epochs=50, batch_size=32, shuffle=True)
-
-loss, acc = model.evaluate(X_train_avg, trainObj.target_one_hot)
-print("\nTrain accuracy = ", acc)
-
-
-target_names = trainObj.target_names
-def label_to_category(target_names, categoryNum):
-    return target_names[categoryNum]
-
-
-pred = model.predict(X_train_avg)
-for i in range(len(X_train_avg)):
-    categoryNum = np.argmax(pred[i])
-    if categoryNum != np.argmax(Y_oh_train[i]):
-        print("\n\n Text:\n", X_train[i])
-        print('\nExpected category:' + trainObj.target.iloc[i] + ' prediction: ' + label_to_category(categoryNum).strip())
+        pred = model.predict(X_train_avg)
+        for i in range(len(X_train_avg)):
+            categoryNum = np.argmax(pred[i])
+            if categoryNum != np.argmax(Y_oh_train[i]):
+                print("\n\n Text:\n", X_train[i])
+                print('\nExpected category:' + self.trainObj.target.iloc[i] + ' prediction: ' + self.label_to_category(categoryNum).strip())
