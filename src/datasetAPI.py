@@ -17,10 +17,7 @@ class RotaDosConcursos:
             Used to shuffle the dataset.
         """
 
-        my_path = os.path.abspath(os.path.dirname(__file__))
-        csv_path = os.path.join(
-                my_path,
-                '../../dataset/rota_dos_concursos.csv')
+        csv_path = 'dataset/rota_dos_concursos.csv'
 
         if os.path.isfile(csv_path):
             self.df = pd.read_csv(
@@ -32,7 +29,7 @@ class RotaDosConcursos:
             labels = []
             ids = []
 
-            for filename in glob.iglob('../../dataset/rawData/**/*.json', recursive=True):
+            for filename in glob.iglob('dataset/rawData/**/*.json', recursive=True):
                 filename = filename.replace("\\", '/')
 
                 try:
@@ -67,23 +64,19 @@ class RotaDosConcursos:
             _, self.df = train_test_split(self.df, test_size=0.2, random_state=random_state)
             _, self._one_hot = train_test_split(self._one_hot, test_size=0.2, random_state=random_state)
 
-
     @property
     def target_names(self):
         target_names = self.df['label'].unique()
         target_names.sort()
         return target_names
 
-
     @property
     def target(self):
         return self.df['label']
 
-
     @property
     def text(self):
         return self.df['text']
-
 
     @property
     def target_one_hot(self):
