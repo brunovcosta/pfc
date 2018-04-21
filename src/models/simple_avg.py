@@ -9,7 +9,7 @@ class SimpleAvg:
         splittedXlen = map(lambda x: len(x.split()), X)
         return max(splittedXlen)
 
-    def sentence_to_avg(sentence, wordEmbedModel):
+    def sentence_to_avg(self, sentence, wordEmbedModel):
         """
         Converts a sentence (string) into a list of words (strings). Extracts
         the word2Vec representation of each word
@@ -67,17 +67,13 @@ class SimpleAvg:
         nCategories = len(self.trainObj.target_names)
 
         self.nFeaturesPerWord = 50
-        wordEmbedPath = '../../../dataset/glove/glove_s{}.txt'.format(
-            str(self.nFeaturesPerWord))
+        wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(
+            self.nFeaturesPerWord)
         wordEmbedModel = KeyedVectors.load_word2vec_format(
             wordEmbedPath,
             unicode_errors="ignore")
 
-        wordEmbedModel.word_vec('casa')
-
-        X_train_avg = self.vector_sentence_to_avg(
-            self,
-            wordEmbedModel)
+        self.X_train_avg = self.vector_sentence_to_avg(wordEmbedModel)
 
         model = self.simple_model(X_train_avg.shape, nCategories)
         model.summary()
@@ -102,6 +98,6 @@ class SimpleAvg:
         pred = model.predict(X_train_avg)
         for i in range(len(X_train_avg)):
             categoryNum = np.argmax(pred[i])
-            if categoryNum != np.argmax(Y_oh_train[i]):
+            if categoryNum != np.argmax(Y_oh_train[i]): #TODO
                 print("\n\n Text:\n", X_train[i])
                 print('\nExpected category:' + self.trainObj.target.iloc[i] + ' prediction: ' + self.label_to_category(categoryNum).strip())
