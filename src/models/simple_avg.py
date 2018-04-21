@@ -27,9 +27,13 @@ class SimpleAvg:
 
         avg = np.zeros((nFeaturesPerWord,))
 
+        total = len(words)
         for w in words:
-            avg += wordEmbedModel.word_vec(w)  # !!!!!!!!!!!Adicionar <UNK> ao vocabulario (media de todas as palavras?)
-        avg = avg / len(words)
+            try:
+                avg += wordEmbedModel.word_vec(w)
+            except KeyError:
+                total -= 1
+        avg = avg / total
 
         return avg
 
