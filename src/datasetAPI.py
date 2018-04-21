@@ -23,7 +23,9 @@ class RotaDosConcursos:
             self.df = pd.read_csv(
                     csv_path,
                     encoding='UTF-8',
-                    index_col=0)
+                    index_col=0,
+                    dtype={ "text": str,
+                            "label": str})
         else:
             texts = []
             labels = []
@@ -52,6 +54,8 @@ class RotaDosConcursos:
                 "label": labels
             }, index=ids)
 
+            self.df.dropna(axis=0, how='any', inplace=True)
+            self.df.loc["clean_text"] = "***********TODO**************************"     #TODO
             self.df.to_csv(csv_path)
 
         self._one_hot = pd.get_dummies(self.df['label'])
@@ -77,6 +81,10 @@ class RotaDosConcursos:
     @property
     def text(self):
         return self.df['text']
+
+    @property
+    def clean_text(self):
+        return self.df['clean_text']
 
     @property
     def target_one_hot(self):
