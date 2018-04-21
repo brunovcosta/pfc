@@ -18,10 +18,15 @@ class RotaDosConcursos:
         """
 
         my_path = os.path.abspath(os.path.dirname(__file__))
-        csv_path = os.path.join(my_path, '../../dataset/rota_dos_concursos.csv')
+        csv_path = os.path.join(
+                my_path,
+                '../../dataset/rota_dos_concursos.csv')
 
         if os.path.isfile(csv_path):
-            self.df = pd.read_csv(csv_path, encoding='UTF-8', index_col=0)
+            self.df = pd.read_csv(
+                    csv_path,
+                    encoding='UTF-8',
+                    index_col=0)
         else:
             texts = []
             labels = []
