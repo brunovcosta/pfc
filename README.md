@@ -2,6 +2,9 @@
 
 Desenvolvimento de ferramenta para classificação de questões em múltiplos aspectos (dificuldade, assunto e coerência com plano disciplinar) para aplicação em sistema de recomendação auxiliando aprendizado.
 
+## Servidor
+root@138.68.30.245
+
 #### Etapas
 
 - Estudar Classificação TF-IDF (TermFrequency - InverseDocumentFrequency)
