@@ -34,9 +34,9 @@ class RotaDosConcursos:
                     data = json.load(open(filename), encoding='UTF-8')
                     if len(data["subject_path"]) == 0 or len(data["text"]) == 0:
                         continue
-                    labels.append(data["subject_path"][0])
+                    labels.append(data["subject_path"][0].strip())
                     text = ' '.join(data["text"].splitlines())
-                    texts.append(text)
+                    texts.append(text.strip())
                     ids.append(data["id"])
                 except UnicodeDecodeError:
                     # Windows error: can't decode byte 0x81
