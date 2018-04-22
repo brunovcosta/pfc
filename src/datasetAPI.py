@@ -75,7 +75,8 @@ class RotaDosConcursos:
             }, index=ids)
 
             self.df.reset_index(inplace=True, drop=True)        # Temporary solution (crawler change TODO)
-            self.df.dropna(axis=0, how='any', inplace=True)
+            indexes_to_drop = self.df.loc[self.df.text == ""].index
+            self.df.drop(indexes_to_drop, inplace=True)
             self.df.to_csv(csv_path)
 
         self._one_hot = pd.get_dummies(self.df['label'])
