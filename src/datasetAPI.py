@@ -74,6 +74,7 @@ class RotaDosConcursos:
                 "label": labels
             }, index=ids)
 
+            self.df.reset_index(inplace=True, drop=True)        # Temporary solution (crawler change TODO)
             self.df.dropna(axis=0, how='any', inplace=True)
             self.df.to_csv(csv_path)
 
