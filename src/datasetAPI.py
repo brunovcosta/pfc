@@ -73,7 +73,7 @@ class RotaDosConcursos:
                 "label": labels
             }, index=ids)
 
-            indexes_to_drop = self.df.loc[(self.df.text == "") or (self.df.clean_text == "")].index
+            indexes_to_drop = self.df.loc[self.df.clean_text == ""].index
             self.df.drop(indexes_to_drop, inplace=True)
             self.df.reset_index(inplace=True, drop=True)        # Temporary solution (crawler change TODO)
             self.df.to_csv(csv_path)
@@ -99,9 +99,7 @@ class RotaDosConcursos:
 
     @property
     def target_names(self):
-        target_names = self.df['label'].unique()
-        target_names.sort()
-        return target_names
+        return self.target_one_hot.axes[1]
 
     @property
     def target(self):

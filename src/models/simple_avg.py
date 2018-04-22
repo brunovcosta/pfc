@@ -5,14 +5,28 @@ from ..datasetAPI import RotaDosConcursos
 
 
 class SimpleAvg:
-    def max_word_length(X):
-        splittedXlen = map(lambda x: len(x.split()), X)
-        return max(splittedXlen)
+
+    def __init__(self):
+        self.trainObj = RotaDosConcursos(subset='train')
+        self.testObj = RotaDosConcursos(subset='test')
+
+        self.nCategories = len(self.trainObj.target_names)
+
+        self.nFeaturesPerWord = 50
+        wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(
+            self.nFeaturesPerWord)
+        wordEmbedModel = KeyedVectors.load_word2vec_format(
+            wordEmbedPath,
+            unicode_errors="ignore")
+
+        self.X_train_avg = self.vector_sentence_to_avg(wordEmbedModel)
+
+        self.X_train_avg = np.array(self.X_train_avg)
 
     def row_sentence_to_avg(self, row, wordEmbedModel, answer_list):
         """
         Converts a sentence (string) into a list of words (strings). Extracts
-        the word2Vec representation of each word and averages its value into 
+        the word2Vec representation of each word and averages its value into
         a single vector encoding the meaning of the sentence.
         """
 
@@ -38,10 +52,10 @@ class SimpleAvg:
         self.trainObj.df.apply(self.row_sentence_to_avg, axis=1, args=[wordEmbedModel, X_train_avg])
         return X_train_avg
 
-    def simple_model(input_shape, nCategories):
-        X_input = keras.layers.Input(input_shape)
+    def simple_model(self):
+        X_input = keras.layers.Input(shape=(self.nFeaturesPerWord,))
 
-        X = keras.layers.Dense(nCategories, name='fc')(X_input)
+        X = keras.layers.Dense(self.nCategories, name='fc')(X_input)
         X = keras.layers.Activation('softmax')(X)
         model = keras.models.Model(
             inputs=X_input,
@@ -50,25 +64,11 @@ class SimpleAvg:
 
         return model
 
-    def label_to_category(target_names, categoryNum):
-        return target_names[categoryNum]
+    def num_to_label(self, categoryNum):
+        return self.target_names[categoryNum]
 
-    def __init__(self):
-        self.trainObj = RotaDosConcursos(subset='train')
-        self.testObj = RotaDosConcursos(subset='test')
-
-        nCategories = len(self.trainObj.target_names)
-
-        self.nFeaturesPerWord = 50
-        wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(
-            self.nFeaturesPerWord)
-        wordEmbedModel = KeyedVectors.load_word2vec_format(
-            wordEmbedPath,
-            unicode_errors="ignore")
-
-        self.X_train_avg = self.vector_sentence_to_avg(wordEmbedModel)
-
-        model = self.simple_model(X_train_avg.shape, nCategories)
+    def execute_model(self):
+        model = self.simple_model()
         model.summary()
 
         model.compile(
@@ -77,20 +77,20 @@ class SimpleAvg:
             metrics=['accuracy'])
 
         model.fit(
-            X_train_avg,
+            self.X_train_avg,
             self.trainObj.target_one_hot,
             epochs=50,
             batch_size=32,
             shuffle=True)
 
-        loss, acc = model.evaluate(X_train_avg, self.trainObj.target_one_hot)
+        loss, acc = model.evaluate(self.X_train_avg, self.trainObj.target_one_hot)
         print("\nTrain accuracy = ", acc)
 
         self.target_names = self.trainObj.target_names
 
-        pred = model.predict(X_train_avg)
-        for i in range(len(X_train_avg)):
+        pred = model.predict(self.X_train_avg)
+        for i in range(len(self.trainObj.target)):
             categoryNum = np.argmax(pred[i])
-            if categoryNum != np.argmax(Y_oh_train[i]): #TODO
-                print("\n\n Text:\n", X_train[i])
-                print('\nExpected category:' + self.trainObj.target.iloc[i] + ' prediction: ' + self.label_to_category(categoryNum).strip())
+            if self.num_to_label(categoryNum) != self.trainObj.target.iloc[i]:
+                print("\n\n Text:\n", self.trainObj.text.iloc[i])
+                print('\nExpected category:' + self.trainObj.target.iloc[i] + ' prediction: ' + self.num_to_label(categoryNum))
