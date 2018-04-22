@@ -1,4 +1,5 @@
 import json
+import re
 import glob
 import os
 import pandas as pd
@@ -24,23 +25,41 @@ class RotaDosConcursos:
                     csv_path,
                     encoding='UTF-8',
                     index_col=0,
-                    dtype={ "text": str,
-                            "label": str})
+                    dtype={"text": str,
+                           "label": str})
         else:
             texts = []
+            clean_texts = []
             labels = []
             ids = []
 
-            for filename in glob.iglob('dataset/rawData/**/*.json', recursive=True):
+            dataset_path = 'dataset/rawData/**/*.json'
+            for filename in glob.iglob(dataset_path, recursive=True):
                 filename = filename.replace("\\", '/')
 
                 try:
                     data = json.load(open(filename), encoding='UTF-8')
-                    if len(data["subject_path"]) == 0 or len(data["text"]) == 0:
+
+                    # empty text or subject
+                    no_subject_path = (len(data["subject_path"]) == 0)
+                    no_text = (len(data["text"]) == 0)
+                    if no_subject_path or no_text:
                         continue
+
+                    # label
                     labels.append(data["subject_path"][0].strip())
+
+                    # text
                     text = ' '.join(data["text"].splitlines())
                     texts.append(text.strip())
+
+                    # clean_text
+                    word_regex = r'(\w+(-\w+)?)'
+                    clean_tokens = re.findall(word_regex, text, re.UNICODE)
+                    clean_text = ' '.join([pair[0] for pair in clean_tokens])
+                    clean_texts.append(clean_text)
+
+                    # id
                     ids.append(data["id"])
                 except UnicodeDecodeError:
                     # Windows error: can't decode byte 0x81
@@ -51,22 +70,31 @@ class RotaDosConcursos:
 
             self.df = pd.DataFrame({
                 "text": texts,
+                "clean_text": clean_texts,
                 "label": labels
             }, index=ids)
 
             self.df.dropna(axis=0, how='any', inplace=True)
-            self.df.loc["clean_text"] = "***********TODO**************************"     #TODO
             self.df.to_csv(csv_path)
 
         self._one_hot = pd.get_dummies(self.df['label'])
 
         if subset == 'train':
-            self.df, _ = train_test_split(self.df, test_size=0.2, random_state=random_state)
-            self._one_hot, _ = train_test_split(self._one_hot, test_size=0.2, random_state=random_state)
+            self.df, _ = train_test_split(self.df,
+                                          test_size=0.2,
+                                          random_state=random_state)
+            self._one_hot, _ = train_test_split(self._one_hot,
+                                                test_size=0.2,
+                                                random_state=random_state)
 
         if subset == 'test':
-            _, self.df = train_test_split(self.df, test_size=0.2, random_state=random_state)
-            _, self._one_hot = train_test_split(self._one_hot, test_size=0.2, random_state=random_state)
+            _, self.df = train_test_split(self.df,
+                                          test_size=0.2,
+                                          random_state=random_state)
+
+            _, self._one_hot = train_test_split(self._one_hot,
+                                                test_size=0.2,
+                                                random_state=random_state)
 
     @property
     def target_names(self):
