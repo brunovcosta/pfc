@@ -26,7 +26,6 @@ class SimpleAvg:
         nFeaturesPerWord = len(wordEmbedModel.word_vec('casa'))
 
         avg = np.zeros((nFeaturesPerWord,))
-
         total = len(words)
         for w in words:
             try:
@@ -34,13 +33,12 @@ class SimpleAvg:
             except KeyError:
                 total -= 1
         avg = avg / total
-
         return avg
 
     def vector_sentence_to_avg(self, wordEmbedModel):
         X = []
 
-        for sentence in self.trainObj.text:
+        for sentence in self.trainObj.clean_text:
             X.append(self.sentence_to_avg(sentence, wordEmbedModel))
 
         return X
