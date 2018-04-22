@@ -41,8 +41,8 @@ class RotaDosConcursos:
 
                     # empty text or subject
                     no_subject_path = (len(data["subject_path"]) == 0)
-                    no_text = (len(data["text"]) == 0)
-                    if no_subject_path or no_text:
+                    no_valid_text = (len(data["text"]) < 20)
+                    if no_subject_path or no_valid_text:
                         continue
 
                     # label
@@ -73,7 +73,9 @@ class RotaDosConcursos:
                 "label": labels
             }, index=ids)
 
-            self.df.dropna(axis=0, how='any', inplace=True)
+            indexes_to_drop = self.df.loc[(self.df.text == "") or (self.df.clean_text == "")].index
+            self.df.drop(indexes_to_drop, inplace=True)
+            self.df.reset_index(inplace=True, drop=True)        # Temporary solution (crawler change TODO)
             self.df.to_csv(csv_path)
 
         self._one_hot = pd.get_dummies(self.df['label'])
@@ -116,9 +118,3 @@ class RotaDosConcursos:
     @property
     def target_one_hot(self):
         return self._one_hot
-
-
-if __name__ == '__main__':
-    obj = RotaDosConcursos(subset='train')
-
-    print(obj.target)

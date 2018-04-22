@@ -10,7 +10,7 @@ output_file = File.new output_path, "w"
 html = Nokogiri::HTML input_file.read
 
 output_data = {
-	id: (html.css "h1.panel-title").text.gsub(/\n/,'').squeeze.scan(/\d+/)[0],
+	id: (input_path.scan /\d+/).last,
 	text: (html.css ".panel-questao .panel-heading").text.gsub(/\n/,'').squeeze,
 	subject_path: (html.css ".materia b").map{|b| b.text.gsub(/\n/,'').squeeze},
 	alternatives: (html.css ".panel-questao .panel-body ul li").map{|li|li.text.gsub(/\n/,'').squeeze.gsub(/^ ?[A-Z].\ /,'')},
