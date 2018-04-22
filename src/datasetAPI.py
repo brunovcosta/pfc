@@ -21,12 +21,11 @@ class RotaDosConcursos:
         csv_path = 'dataset/rota_dos_concursos.csv'
 
         if os.path.isfile(csv_path):
-            self.df = pd.read_csv(
-                    csv_path,
-                    encoding='UTF-8',
-                    index_col=0,
-                    dtype={"text": str,
-                           "label": str})
+            self.df = pd.read_csv(csv_path,
+                                  encoding='UTF-8',
+                                  index_col=0,
+                                  dtype={"text": str,
+                                         "label": str})
         else:
             texts = []
             clean_texts = []
