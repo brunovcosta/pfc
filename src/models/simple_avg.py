@@ -9,41 +9,34 @@ class SimpleAvg:
         splittedXlen = map(lambda x: len(x.split()), X)
         return max(splittedXlen)
 
-    def sentence_to_avg(self, sentence, wordEmbedModel):
+    def row_sentence_to_avg(self, row, wordEmbedModel, answer_list):
         """
         Converts a sentence (string) into a list of words (strings). Extracts
-        the word2Vec representation of each word
-        and averages its value into a single vector encoding the meaning of the
-        sentence.
-
-        Returns:
-        avg -- average vector encoding information about the sentence,
-        numpy-array
+        the word2Vec representation of each word and averages its value into 
+        a single vector encoding the meaning of the sentence.
         """
 
-        words = sentence.lower().split()
+        words = row.clean_text.lower().split()
 
         nFeaturesPerWord = len(wordEmbedModel.word_vec('casa'))
 
         avg = np.zeros((nFeaturesPerWord,))
-
         total = len(words)
         for w in words:
             try:
                 avg += wordEmbedModel.word_vec(w)
             except KeyError:
                 total -= 1
-        avg = avg / total
-
-        return avg
+        if total != 0:
+            avg = avg / total
+        else:
+            print("Clean text with no words in the embedding model for index {} .".format(row.name))
+        answer_list.append(avg)
 
     def vector_sentence_to_avg(self, wordEmbedModel):
-        X = []
-
-        for sentence in self.trainObj.text:
-            X.append(self.sentence_to_avg(sentence, wordEmbedModel))
-
-        return X
+        X_train_avg = []
+        self.trainObj.df.apply(self.row_sentence_to_avg, axis=1, args=[wordEmbedModel, X_train_avg])
+        return X_train_avg
 
     def simple_model(input_shape, nCategories):
         X_input = keras.layers.Input(input_shape)
