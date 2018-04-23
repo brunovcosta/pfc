@@ -75,9 +75,11 @@ class RotaDosConcursos:
 
             indexes_to_drop = self.df.loc[self.df.clean_text == ""].index
             self.df.drop(indexes_to_drop, inplace=True)
+            self.df.drop_duplicates(inplace=True)
             self.df.reset_index(inplace=True, drop=True)        # Temporary solution (crawler change TODO)
             self.df.to_csv(csv_path)
 
+        self.df.drop_duplicates(inplace=True)
         self._one_hot = pd.get_dummies(self.df['label'])
 
         if subset == 'train':

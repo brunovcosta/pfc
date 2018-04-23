@@ -10,7 +10,8 @@ class SimpleAvg:
         self.trainObj = RotaDosConcursos(subset='train')
         self.testObj = RotaDosConcursos(subset='test')
 
-        self.nCategories = len(self.trainObj.target_names)
+        self.target_names = self.trainObj.target_names
+        self.nCategories = len(self.target_names)
 
         self.nFeaturesPerWord = 50
         wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(
@@ -19,9 +20,8 @@ class SimpleAvg:
             wordEmbedPath,
             unicode_errors="ignore")
 
-        self.X_train_avg = self.vector_sentence_to_avg(wordEmbedModel)
-
-        self.X_train_avg = np.array(self.X_train_avg)
+        self.X_train_avg = self.vector_sentence_to_avg(self.trainObj, wordEmbedModel)
+        self.X_test_avg = self.vector_sentence_to_avg(self.testObj, wordEmbedModel)
 
     def row_sentence_to_avg(self, row, wordEmbedModel, answer_list):
         """
@@ -47,10 +47,11 @@ class SimpleAvg:
             print("Clean text with no words in the embedding model for index {} .".format(row.name))
         answer_list.append(avg)
 
-    def vector_sentence_to_avg(self, wordEmbedModel):
-        X_train_avg = []
-        self.trainObj.df.apply(self.row_sentence_to_avg, axis=1, args=[wordEmbedModel, X_train_avg])
-        return X_train_avg
+    def vector_sentence_to_avg(self, dataObj, wordEmbedModel):
+        X_avg = []
+        dataObj.df.apply(self.row_sentence_to_avg, axis=1, args=[wordEmbedModel, X_avg])
+        X_avg = np.array(X_avg)
+        return X_avg
 
     def simple_model(self):
         X_input = keras.layers.Input(shape=(self.nFeaturesPerWord,))
@@ -79,18 +80,29 @@ class SimpleAvg:
         model.fit(
             self.X_train_avg,
             self.trainObj.target_one_hot,
-            epochs=50,
+            epochs=9,
             batch_size=32,
             shuffle=True)
 
         loss, acc = model.evaluate(self.X_train_avg, self.trainObj.target_one_hot)
         print("\nTrain accuracy = ", acc)
 
-        self.target_names = self.trainObj.target_names
+        loss, acc = model.evaluate(self.X_test_avg, self.testObj.target_one_hot)
+        print("\nTest accuracy = ", acc)
 
-        pred = model.predict(self.X_train_avg)
-        for i in range(len(self.trainObj.target)):
+        #self.inspect_mispredictions(model, self.trainObj, self.X_train_avg, 40)
+        self.inspect_mispredictions(model, self.testObj, self.X_test_avg, 40)
+
+    def inspect_mispredictions(self, model, dataObj, X_avg, max_inspect_number):
+        pred = model.predict(X_avg)
+        mispredictions = 0
+        for i in range(len(dataObj.target)):
             categoryNum = np.argmax(pred[i])
-            if self.num_to_label(categoryNum) != self.trainObj.target.iloc[i]:
-                print("\n\n Text:\n", self.trainObj.text.iloc[i])
-                print('\nExpected category:' + self.trainObj.target.iloc[i] + ' prediction: ' + self.num_to_label(categoryNum))
+            if self.num_to_label(categoryNum) != dataObj.target.iloc[i]:
+                print("\n\n Text:\n", dataObj.text.iloc[i])
+                print('\nExpected category: {}\nPrediction: {}'.format(
+                    dataObj.target.iloc[i],
+                    self.num_to_label(categoryNum)))
+                mispredictions += 1
+                if mispredictions > max_inspect_number:
+                    break
