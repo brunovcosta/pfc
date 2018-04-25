@@ -82,6 +82,18 @@ class RotaDosConcursos:
         self.df.drop_duplicates(inplace=True)
         self._one_hot = pd.get_dummies(self.df['label'])
 
+        def max_text_length(text_column):
+            """
+            text_column : 'text' or 'clean_text'
+            """
+            splitted_text_len = map(lambda text: len(text.split()), self.df.loc[:, text_column])
+            return max(splitted_text_len)
+
+        self.max_text_length_dict = {
+            'text': max_text_length('text'),
+            'clean_text': max_text_length('clean_text')
+        }
+
         if subset == 'train':
             self.df, _ = train_test_split(self.df,
                                           test_size=0.2,
@@ -98,6 +110,9 @@ class RotaDosConcursos:
             _, self._one_hot = train_test_split(self._one_hot,
                                                 test_size=0.2,
                                                 random_state=random_state)
+
+    def max_text_length(self, text_column):
+        return self.max_text_length_dict[text_column]
 
     @property
     def target_names(self):
