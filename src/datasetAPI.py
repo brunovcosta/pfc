@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 class RotaDosConcursos:
 
-    def __init__(self, random_state=1, subset='all'):
+    def __init__(self, random_state=1, subset='all', frac=1):
         """
         subset : 'train' or 'test', 'all', optional
             Select the dataset to load: 'train' for the training set, 'test'
@@ -16,6 +16,10 @@ class RotaDosConcursos:
 
         random_state : numpy random number generator or seed integer
             Used to shuffle the dataset.
+
+        frac: float
+            0 < frac <=1
+            Fraction of the data that is going to be used.
         """
 
         csv_path = 'dataset/rota_dos_concursos.csv'
@@ -80,6 +84,7 @@ class RotaDosConcursos:
             self.df.to_csv(csv_path)
 
         self.df.drop_duplicates(inplace=True)
+        self.df = self.df.sample(frac=frac, random_state=random_state)
         self._one_hot = pd.get_dummies(self.df['label'])
 
         def max_text_length(text_column):
@@ -95,21 +100,25 @@ class RotaDosConcursos:
         }
 
         if subset == 'train':
-            self.df, _ = train_test_split(self.df,
-                                          test_size=0.2,
-                                          random_state=random_state)
-            self._one_hot, _ = train_test_split(self._one_hot,
-                                                test_size=0.2,
-                                                random_state=random_state)
+            self.df, _ = train_test_split(
+                self.df,
+                test_size=0.2,
+                random_state=random_state)
+            self._one_hot, _ = train_test_split(
+                self._one_hot,
+                test_size=0.2,
+                random_state=random_state)
 
         if subset == 'test':
-            _, self.df = train_test_split(self.df,
-                                          test_size=0.2,
-                                          random_state=random_state)
+            _, self.df = train_test_split(
+                self.df,
+                test_size=0.2,
+                random_state=random_state)
 
-            _, self._one_hot = train_test_split(self._one_hot,
-                                                test_size=0.2,
-                                                random_state=random_state)
+            _, self._one_hot = train_test_split(
+                self._one_hot,
+                test_size=0.2,
+                random_state=random_state)
 
     def max_text_length(self, text_column):
         return self.max_text_length_dict[text_column]
