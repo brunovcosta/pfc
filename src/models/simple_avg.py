@@ -5,26 +5,38 @@ from ..datasetAPI import RotaDosConcursos
 
 
 class SimpleAvg:
-    def max_word_length(X):
-        splittedXlen = map(lambda x: len(x.split()), X)
-        return max(splittedXlen)
+
+    def __init__(self, n_features_per_word=50, random_state=1):
+        self.trainObj = RotaDosConcursos(subset='train', random_state=random_state)
+        self.testObj = RotaDosConcursos(subset='test', random_state=random_state)
+
+        self.target_names = self.trainObj.target_names
+        self.n_categories = len(self.target_names)
+
+        self.n_features_per_word = n_features_per_word
+        wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(
+            self.n_features_per_word)
+        wordEmbedModel = KeyedVectors.load_word2vec_format(
+            wordEmbedPath,
+            unicode_errors="ignore")
+
+        self.X_train_avg = self.sentence_to_avg(self.trainObj, wordEmbedModel)
+        self.X_test_avg = self.sentence_to_avg(self.testObj, wordEmbedModel)
 
     def row_sentence_to_avg(self, row, wordEmbedModel, answer_list):
         """
         Converts a sentence (string) into a list of words (strings). Extracts
-        the word2Vec representation of each word and averages its value into 
+        the word2Vec representation of each word and averages its value into
         a single vector encoding the meaning of the sentence.
         """
 
         words = row.clean_text.lower().split()
 
-        nFeaturesPerWord = len(wordEmbedModel.word_vec('casa'))
-
-        avg = np.zeros((nFeaturesPerWord,))
+        avg = np.zeros((self.n_features_per_word,))
         total = len(words)
-        for w in words:
+        for word in words:
             try:
-                avg += wordEmbedModel.word_vec(w)
+                avg += wordEmbedModel.word_vec(word)
             except KeyError:
                 total -= 1
         if total != 0:
@@ -33,15 +45,16 @@ class SimpleAvg:
             print("Clean text with no words in the embedding model for index {} .".format(row.name))
         answer_list.append(avg)
 
-    def vector_sentence_to_avg(self, wordEmbedModel):
-        X_train_avg = []
-        self.trainObj.df.apply(self.row_sentence_to_avg, axis=1, args=[wordEmbedModel, X_train_avg])
-        return X_train_avg
+    def sentence_to_avg(self, dataObj, wordEmbedModel):
+        X_avg = []
+        dataObj.df.apply(self.row_sentence_to_avg, axis=1, args=[wordEmbedModel, X_avg])
+        X_avg = np.array(X_avg)
+        return X_avg
 
-    def simple_model(input_shape, nCategories):
-        X_input = keras.layers.Input(input_shape)
+    def build_model(self):
+        X_input = keras.layers.Input(shape=(self.n_features_per_word,))
 
-        X = keras.layers.Dense(nCategories, name='fc')(X_input)
+        X = keras.layers.Dense(self.n_categories, name='fc')(X_input)
         X = keras.layers.Activation('softmax')(X)
         model = keras.models.Model(
             inputs=X_input,
@@ -50,25 +63,11 @@ class SimpleAvg:
 
         return model
 
-    def label_to_category(target_names, categoryNum):
-        return target_names[categoryNum]
+    def num_to_label(self, categoryNum):
+        return self.target_names[categoryNum]
 
-    def __init__(self):
-        self.trainObj = RotaDosConcursos(subset='train')
-        self.testObj = RotaDosConcursos(subset='test')
-
-        nCategories = len(self.trainObj.target_names)
-
-        self.nFeaturesPerWord = 50
-        wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(
-            self.nFeaturesPerWord)
-        wordEmbedModel = KeyedVectors.load_word2vec_format(
-            wordEmbedPath,
-            unicode_errors="ignore")
-
-        self.X_train_avg = self.vector_sentence_to_avg(wordEmbedModel)
-
-        model = self.simple_model(X_train_avg.shape, nCategories)
+    def execute_model(self):
+        model = self.build_model()
         model.summary()
 
         model.compile(
@@ -77,20 +76,31 @@ class SimpleAvg:
             metrics=['accuracy'])
 
         model.fit(
-            X_train_avg,
+            self.X_train_avg,
             self.trainObj.target_one_hot,
-            epochs=50,
+            epochs=9,
             batch_size=32,
             shuffle=True)
 
-        loss, acc = model.evaluate(X_train_avg, self.trainObj.target_one_hot)
+        loss, acc = model.evaluate(self.X_train_avg, self.trainObj.target_one_hot)
         print("\nTrain accuracy = ", acc)
 
-        self.target_names = self.trainObj.target_names
+        loss, acc = model.evaluate(self.X_test_avg, self.testObj.target_one_hot)
+        print("\nTest accuracy = ", acc)
 
-        pred = model.predict(X_train_avg)
-        for i in range(len(X_train_avg)):
+        #self.inspect_mispredictions(model, self.trainObj, self.X_train_avg, 40)
+        self.inspect_mispredictions(model, self.testObj, self.X_test_avg, 40)
+
+    def inspect_mispredictions(self, model, dataObj, X_avg, max_inspect_number):
+        pred = model.predict(X_avg)
+        mispredictions_count = 0
+        for i in range(len(dataObj.target)):
             categoryNum = np.argmax(pred[i])
-            if categoryNum != np.argmax(Y_oh_train[i]): #TODO
-                print("\n\n Text:\n", X_train[i])
-                print('\nExpected category:' + self.trainObj.target.iloc[i] + ' prediction: ' + self.label_to_category(categoryNum).strip())
+            if self.num_to_label(categoryNum) != dataObj.target.iloc[i]:
+                print("\n\n Text:\n", dataObj.text.iloc[i])
+                print('\nExpected category: {}\nPrediction: {}'.format(
+                    dataObj.target.iloc[i],
+                    self.num_to_label(categoryNum)))
+                mispredictions_count += 1
+                if mispredictions_count > max_inspect_number:
+                    break
