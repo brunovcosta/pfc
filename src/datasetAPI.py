@@ -8,7 +8,7 @@ from sklearn.model_selection import train_test_split
 
 class RotaDosConcursos:
 
-    def __init__(self, random_state=1, subset='all'):
+    def __init__(self, random_state=1, subset='all', frac=1):
         """
         subset : 'train' or 'test', 'all', optional
             Select the dataset to load: 'train' for the training set, 'test'
@@ -16,17 +16,20 @@ class RotaDosConcursos:
 
         random_state : numpy random number generator or seed integer
             Used to shuffle the dataset.
+
+        frac: float
+            0 < frac <=1
+            Fraction of the data that is going to be used.
         """
 
         csv_path = 'dataset/rota_dos_concursos.csv'
 
         if os.path.isfile(csv_path):
-            self.df = pd.read_csv(
-                    csv_path,
-                    encoding='UTF-8',
-                    index_col=0,
-                    dtype={"text": str,
-                           "label": str})
+            self.df = pd.read_csv(csv_path,
+                                  encoding='UTF-8',
+                                  index_col=0,
+                                  dtype={"text": str,
+                                         "label": str})
         else:
             texts = []
             clean_texts = []
@@ -74,35 +77,55 @@ class RotaDosConcursos:
                 "label": labels
             }, index=ids)
 
-            indexes_to_drop = self.df.loc[(self.df.text == "") or (self.df.clean_text == "")].index
+            indexes_to_drop = self.df.loc[self.df.clean_text == ""].index
             self.df.drop(indexes_to_drop, inplace=True)
+            self.df.drop_duplicates(inplace=True)
             self.df.reset_index(inplace=True, drop=True)        # Temporary solution (crawler change TODO)
             self.df.to_csv(csv_path)
 
+        self.df.drop_duplicates(inplace=True)
+        self.df = self.df.sample(frac=frac, random_state=random_state)
         self._one_hot = pd.get_dummies(self.df['label'])
 
+        def max_text_length(text_column):
+            """
+            text_column : 'text' or 'clean_text'
+            """
+            splitted_text_len = map(lambda text: len(text.split()), self.df.loc[:, text_column])
+            return max(splitted_text_len)
+
+        self.max_text_length_dict = {
+            'text': max_text_length('text'),
+            'clean_text': max_text_length('clean_text')
+        }
+
         if subset == 'train':
-            self.df, _ = train_test_split(self.df,
-                                          test_size=0.2,
-                                          random_state=random_state)
-            self._one_hot, _ = train_test_split(self._one_hot,
-                                                test_size=0.2,
-                                                random_state=random_state)
+            self.df, _ = train_test_split(
+                self.df,
+                test_size=0.2,
+                random_state=random_state)
+            self._one_hot, _ = train_test_split(
+                self._one_hot,
+                test_size=0.2,
+                random_state=random_state)
 
         if subset == 'test':
-            _, self.df = train_test_split(self.df,
-                                          test_size=0.2,
-                                          random_state=random_state)
+            _, self.df = train_test_split(
+                self.df,
+                test_size=0.2,
+                random_state=random_state)
 
-            _, self._one_hot = train_test_split(self._one_hot,
-                                                test_size=0.2,
-                                                random_state=random_state)
+            _, self._one_hot = train_test_split(
+                self._one_hot,
+                test_size=0.2,
+                random_state=random_state)
+
+    def max_text_length(self, text_column):
+        return self.max_text_length_dict[text_column]
 
     @property
     def target_names(self):
-        target_names = self.df['label'].unique()
-        target_names.sort()
-        return target_names
+        return self.target_one_hot.axes[1]
 
     @property
     def target(self):
