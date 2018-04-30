@@ -6,9 +6,18 @@ from ..datasetAPI import RotaDosConcursos
 
 class SimpleAvg:
 
-    def __init__(self, n_features_per_word=50, random_state=1):
-        self.trainObj = RotaDosConcursos(subset='train', random_state=random_state)
-        self.testObj = RotaDosConcursos(subset='test', random_state=random_state)
+    def __init__(self, n_features_per_word=50, random_state=1,
+                 group_labels=False, min_number_per_label=0):
+        self.trainObj = RotaDosConcursos(
+            subset='train',
+            random_state=random_state,
+            group_labels=group_labels,
+            min_number_per_label=min_number_per_label)
+        self.testObj = RotaDosConcursos(
+            subset='test',
+            random_state=random_state,
+            group_labels=group_labels,
+            min_number_per_label=min_number_per_label)
 
         self.target_names = self.trainObj.target_names
         self.n_categories = len(self.target_names)

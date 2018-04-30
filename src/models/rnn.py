@@ -6,13 +6,22 @@ from ..datasetAPI import RotaDosConcursos
 
 class RNN:
 
-    def __init__(self, n_features_per_word=50, random_state=1, frac=1):
-        self.trainObj = RotaDosConcursos(subset='train', random_state=random_state, frac=frac)
-        self.testObj = RotaDosConcursos(subset='test', random_state=random_state, frac=frac)
+    def __init__(self, n_features_per_word=50, random_state=1, frac=1,
+                 group_labels=False, min_number_per_label=0):
+        self.trainObj = RotaDosConcursos(
+            subset='train',
+            random_state=random_state,
+            group_labels=group_labels,
+            min_number_per_label=min_number_per_label)
+        self.testObj = RotaDosConcursos(
+            subset='test',
+            random_state=random_state,
+            group_labels=group_labels,
+            min_number_per_label=min_number_per_label)
 
         self.max_len = self.trainObj.max_text_length("text")
         self.target_names = self.trainObj.target_names
-        self.nCategories = len(self.target_names)
+        self.n_categories = len(self.target_names)
 
         self.n_features_per_word = n_features_per_word
         wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(
@@ -74,10 +83,6 @@ class RNN:
         """
         Function creating the model's graph.
 
-        Arguments:
-        word_to_vec_map -- dictionary mapping every word in a vocabulary into its 50-dimensional vector representation
-        word_to_index -- dictionary mapping from words to their indices in the vocabulary (400,001 words)
-
         Returns:
         model -- a model instance in Keras
         """
@@ -92,17 +97,16 @@ class RNN:
         embeddings = embedding_layer(sentence_indices)
 
         # Propagate the embeddings through an LSTM layer with 128-dimensional hidden state
-        # Be careful, the returned output should be a batch of sequences.
+        # The returned output should be a batch of sequences.
         X = keras.layers.LSTM(128, return_sequences=True)(embeddings)
         # Add dropout with a probability of 0.5
         X = keras.layers.Dropout(0.5)(X)
         # Propagate X trough another LSTM layer with 128-dimensional hidden state
-        # Be careful, the returned output should be a single hidden state, not a batch of sequences.
+        # The returned output should be a single hidden state, not a batch of sequences.
         X = keras.layers.LSTM(128, return_sequences=False)(X)
         # Add dropout with a probability of 0.5
         X = keras.layers.Dropout(0.5)(X)
-        # Propagate X through a Dense layer with softmax activation to get back a batch of 5-dimensional vectors.
-        X = keras.layers.Dense(5)(X)
+        X = keras.layers.Dense(self.n_categories)(X)
         # Add a softmax activation
         X = keras.layers.Activation('softmax')(X)
 

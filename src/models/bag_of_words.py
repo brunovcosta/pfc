@@ -18,11 +18,11 @@ class BagOfWords:
             ('tfidf', TfidfTransformer()),
             ('clf-svm', SGDClassifier(loss='hinge',penalty='l2', alpha=1e-3, n_iter=5, random_state=42))
         ])
-        
+
         _ = text_clf_svm.fit(self.trainObj.text, self.trainObj.target)
         predicted_svm = text_clf_svm.predict(self.testObj.text)
         self.mean_result = np.mean(predicted_svm == self.testObj.target)
-        
+
         # X_trains_counts = count_vect.fit_transform(self.trainObj.loc)
         # X_train_counts.shape
 
@@ -62,4 +62,3 @@ class BagOfWords:
         #     categoryNum = np.argmax(pred[i])
         #     if categoryNum != np.argmax(Y_oh_train[i]): #TODO
         #         print("\n\n Text:\n", X_train[i])
-           
