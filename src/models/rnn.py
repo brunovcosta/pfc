@@ -1,34 +1,18 @@
 import keras
 import numpy as np
-from gensim.models import KeyedVectors
-from ..datasetAPI import RotaDosConcursos
+from .word_embedding_model import WordEmbeddingModelKeras
 
 
-class RNN:
+class RNN(WordEmbeddingModelKeras):
 
     def __init__(self, n_features_per_word=50, random_state=1, frac=1,
                  group_labels=False, min_number_per_label=0):
-        self.trainObj = RotaDosConcursos(
-            subset='train',
+        super(RNN, self).__init__(
             random_state=random_state,
+            n_features_per_word=n_features_per_word,
+            frac=frac,
             group_labels=group_labels,
             min_number_per_label=min_number_per_label)
-        self.testObj = RotaDosConcursos(
-            subset='test',
-            random_state=random_state,
-            group_labels=group_labels,
-            min_number_per_label=min_number_per_label)
-
-        self.max_len = self.trainObj.max_text_length("text")
-        self.target_names = self.trainObj.target_names
-        self.n_categories = len(self.target_names)
-
-        self.n_features_per_word = n_features_per_word
-        wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(
-            self.n_features_per_word)
-        self.wordEmbedModel = KeyedVectors.load_word2vec_format(
-            wordEmbedPath,
-            unicode_errors="ignore")
 
         self.train_indices = self.sentences_to_indices(self.trainObj)
         self.test_indices = self.sentences_to_indices(self.testObj)
@@ -116,45 +100,3 @@ class RNN:
             outputs=X)
 
         return model
-
-    def num_to_label(self, categoryNum):
-        return self.target_names[categoryNum]
-
-    def execute_model(self):
-        model = self.build_model()
-        model.summary()
-
-        model.compile(
-            loss='categorical_crossentropy',
-            optimizer='adam',
-            metrics=['accuracy'])
-
-        model.fit(
-            self.train_indices,
-            self.trainObj.target_one_hot,
-            epochs=9,
-            batch_size=32,
-            shuffle=True)
-
-        loss, acc = model.evaluate(self.train_indices, self.trainObj.target_one_hot)
-        print("\nTrain accuracy = ", acc)
-
-        loss, acc = model.evaluate(self.test_indices, self.testObj.target_one_hot)
-        print("\nTest accuracy = ", acc)
-
-        #self.inspect_mispredictions(model, self.trainObj, self.train_indices, 40)
-        self.inspect_mispredictions(model, self.testObj, self.test_indices, 40)
-
-    def inspect_mispredictions(self, model, dataObj, X_indices, max_inspect_number):
-        pred = model.predict(X_indices)
-        mispredictions = 0
-        for i in range(len(dataObj.target)):
-            categoryNum = np.argmax(pred[i])
-            if self.num_to_label(categoryNum) != dataObj.target.iloc[i]:
-                print("\n\n Text:\n", dataObj.text.iloc[i])
-                print('\nExpected category: {}\nPrediction: {}'.format(
-                    dataObj.target.iloc[i],
-                    self.num_to_label(categoryNum)))
-                mispredictions += 1
-                if mispredictions > max_inspect_number:
-                    break
