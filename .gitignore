@@ -16,3 +16,6 @@ __pycache__/
 
 # Mac files
 .DS_Store
+
+#Extra files
+not_to_commit/*
