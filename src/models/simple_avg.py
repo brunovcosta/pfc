@@ -5,14 +5,15 @@ from .word_embedding_model import WordEmbeddingModelKeras
 class SimpleAvg(WordEmbeddingModelKeras):
 
     def __init__(self, n_features_per_word=50,
-                 random_state=1,
+                 random_state=1, frac=1,
                  group_labels=False, min_number_per_label=0):
 
         super(SimpleAvg, self).__init__(
             random_state=random_state,
             n_features_per_word=n_features_per_word,
             group_labels=group_labels,
-            min_number_per_label=min_number_per_label)
+            min_number_per_label=min_number_per_label,
+            frac=frac)
 
         self.X_train_avg = self.sentence_to_avg(self.trainObj)
         self.X_test_avg = self.sentence_to_avg(self.testObj)

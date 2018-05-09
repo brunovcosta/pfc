@@ -1,5 +1,9 @@
-from .base_model import BaseModel
+import keras
+from datetime import datetime
 from gensim.models import KeyedVectors
+from .base_model import BaseModel
+from ..utils import TrainValTensorBoard
+
 
 class WordEmbeddingModelKeras(BaseModel):
 
@@ -25,6 +29,20 @@ class WordEmbeddingModelKeras(BaseModel):
         model = self.build_model()
         model.summary()
 
+        now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+        log_folder_name = f'run-{now}'
+
+        tbCallBack = TrainValTensorBoard(
+            log_dir=f'./tf_logs/{log_folder_name}',
+            histogram_freq=0,
+            batch_size=32,
+            write_graph=True,
+            write_grads=False,
+            write_images=False,
+            embeddings_freq=0,
+            embeddings_layer_names=None,
+            embeddings_metadata=None)
+
         model.compile(
             loss='categorical_crossentropy',
             optimizer='adam',
@@ -33,15 +51,11 @@ class WordEmbeddingModelKeras(BaseModel):
         model.fit(
             self.X_train_avg,
             self.trainObj.target_one_hot,
+            validation_data=(self.X_test_avg, self.testObj.target_one_hot),
             epochs=9,
             batch_size=32,
-            shuffle=True)
-
-        loss, acc = model.evaluate(self.X_train_avg, self.trainObj.target_one_hot)
-        print("\nTrain accuracy = ", acc)
-
-        loss, acc = model.evaluate(self.X_test_avg, self.testObj.target_one_hot)
-        print("\nTest accuracy = ", acc)
+            shuffle=True,
+            callbacks=[tbCallBack])
 
         #self.inspect_mispredictions(model, self.trainObj, self.X_train_avg, 40)
         self.inspect_mispredictions(model, self.testObj, self.X_test_avg, 40)
