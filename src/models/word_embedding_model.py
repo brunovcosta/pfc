@@ -25,6 +25,9 @@ class WordEmbeddingModelKeras(BaseModel):
             wordEmbedPath,
             unicode_errors="ignore")
 
+        self.X_train = self.generate_X_input(self.trainObj)
+        self.X_test = self.generate_X_input(self.testObj)
+
     def execute_model(self):
         model = self.build_model()
         model.summary()
@@ -33,6 +36,7 @@ class WordEmbeddingModelKeras(BaseModel):
         log_folder_name = f'run-{now}'
 
         tbCallBack = TrainValTensorBoard(
+            [self.X_train, self.trainObj.target_one_hot],
             log_dir=f'./tf_logs/{log_folder_name}',
             histogram_freq=0,
             batch_size=32,
@@ -49,13 +53,16 @@ class WordEmbeddingModelKeras(BaseModel):
             metrics=['accuracy'])
 
         model.fit(
-            self.X_train_avg,
+            self.X_train,
             self.trainObj.target_one_hot,
-            validation_data=(self.X_test_avg, self.testObj.target_one_hot),
+            validation_data=(self.X_test, self.testObj.target_one_hot),
             epochs=9,
             batch_size=32,
             shuffle=True,
             callbacks=[tbCallBack])
 
-        #self.inspect_mispredictions(model, self.trainObj, self.X_train_avg, 40)
-        self.inspect_mispredictions(model, self.testObj, self.X_test_avg, 40)
+        #self.inspect_mispredictions(model, self.trainObj, self.X_train, 40)
+        self.inspect_mispredictions(model, self.testObj, self.X_test, 40)
+
+    def generate_X_input(self, dataObj):
+        raise NotImplementedError

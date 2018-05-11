@@ -5,18 +5,6 @@ from .word_embedding_model import WordEmbeddingModelKeras
 
 class RNN(WordEmbeddingModelKeras):
 
-    def __init__(self, n_features_per_word=50, random_state=1, frac=1,
-                 group_labels=False, min_number_per_label=0):
-        super(RNN, self).__init__(
-            random_state=random_state,
-            n_features_per_word=n_features_per_word,
-            frac=frac,
-            group_labels=group_labels,
-            min_number_per_label=min_number_per_label)
-
-        self.train_indices = self.sentences_to_indices(self.trainObj)
-        self.test_indices = self.sentences_to_indices(self.testObj)
-
     def row_sentences_to_indices(self, row, max_len, answer_list):
         """
         Converts an array of sentences (strings) into an array of indices corresponding
@@ -36,7 +24,7 @@ class RNN(WordEmbeddingModelKeras):
 
         answer_list.append(X_indices)
 
-    def sentences_to_indices(self, dataObj):
+    def generate_X_input(self, dataObj):
         X_indices = []
         dataObj.df.apply(
             self.row_sentences_to_indices, axis=1,
