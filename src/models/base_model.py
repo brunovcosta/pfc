@@ -28,10 +28,10 @@ class BaseModel:
         """
         Returns the model.
         """
-        pass
+        raise NotImplementedError
 
     def execute_model(self):
-        pass
+        raise NotImplementedError
 
     def num_to_label(self, categoryNum):
         return self.target_names[categoryNum]
