@@ -1,5 +1,5 @@
 import numpy as np
-import keras
+import tensorflow as tf
 from .word_embedding_model import WordEmbeddingModelKeras
 
 class SimpleAvg(WordEmbeddingModelKeras):
@@ -33,11 +33,10 @@ class SimpleAvg(WordEmbeddingModelKeras):
         return X_avg
 
     def build_model(self):
-        X_input = keras.layers.Input(shape=(self.n_features_per_word,))
-
-        X = keras.layers.Dense(self.n_categories, name='fc')(X_input)
-        X = keras.layers.Activation('softmax')(X)
-        model = keras.models.Model(
+        X_input = tf.keras.layers.Input(shape=(self.n_features_per_word,))
+        X = tf.keras.layers.Dense(self.n_categories, name='fc')(X_input)
+        X = tf.keras.layers.Activation('softmax')(X)
+        model = tf.keras.models.Model(
             inputs=X_input,
             outputs=X,
             name='simple_model')

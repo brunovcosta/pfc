@@ -13,11 +13,11 @@ class RotaDosConcursos:
                  frac=1, group_labels=False,
                  min_number_per_label=0):
         """
-        subset : 'train' or 'test', 'all', optional
+        subset: 'train' or 'test', 'all', optional
             Select the dataset to load: 'train' for the training set, 'test'
             for the test set, 'all' for both, with shuffled ordering.
 
-        random_state : numpy random number generator or seed integer
+        random_state: numpy random number generator or seed integer
             Used to shuffle the dataset.
 
         frac: float
