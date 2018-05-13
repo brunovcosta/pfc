@@ -1,4 +1,3 @@
-import keras
 from datetime import datetime
 from gensim.models import KeyedVectors
 from .base_model import BaseModel
@@ -35,22 +34,14 @@ class WordEmbeddingModelKeras(BaseModel):
         now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
         log_folder_name = f'run-{now}'
 
+        model.compile(
+            loss='categorical_crossentropy',
+            optimizer='adam')
+
         tbCallBack = TrainValTensorBoard(
             [self.X_train, self.trainObj.target_one_hot],
             log_dir=f'./tf_logs/{log_folder_name}',
-            histogram_freq=0,
-            batch_size=32,
-            write_graph=True,
-            write_grads=False,
-            write_images=False,
-            embeddings_freq=0,
-            embeddings_layer_names=None,
-            embeddings_metadata=None)
-
-        model.compile(
-            loss='categorical_crossentropy',
-            optimizer='adam',
-            metrics=['accuracy'])
+            write_graph=True)
 
         model.fit(
             self.X_train,

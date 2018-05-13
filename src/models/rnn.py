@@ -1,4 +1,4 @@
-import keras
+import tensorflow as tf
 import numpy as np
 from .word_embedding_model import WordEmbeddingModelKeras
 
@@ -60,7 +60,7 @@ class RNN(WordEmbeddingModelKeras):
         """
 
         # Define sentence_indices as the input of the graph, it should be of dtype 'int32' (as it contains indices).
-        sentence_indices = keras.layers.Input(shape=(self.max_len,), dtype='int32')
+        sentence_indices = tf.keras.layers.Input(shape=(self.max_len,), dtype='int32')
 
         # Create the embedding layer pretrained with GloVe Vectors
         embedding_layer = self.pretrained_embedding_layer()
@@ -70,20 +70,20 @@ class RNN(WordEmbeddingModelKeras):
 
         # Propagate the embeddings through an LSTM layer with 128-dimensional hidden state
         # The returned output should be a batch of sequences.
-        X = keras.layers.LSTM(128, return_sequences=True)(embeddings)
+        X = tf.keras.layers.LSTM(128, return_sequences=True)(embeddings)
         # Add dropout with a probability of 0.5
-        X = keras.layers.Dropout(0.5)(X)
+        X = tf.keras.layers.Dropout(0.5)(X)
         # Propagate X trough another LSTM layer with 128-dimensional hidden state
         # The returned output should be a single hidden state, not a batch of sequences.
-        X = keras.layers.LSTM(128, return_sequences=False)(X)
+        X = tf.keras.layers.LSTM(128, return_sequences=False)(X)
         # Add dropout with a probability of 0.5
-        X = keras.layers.Dropout(0.5)(X)
-        X = keras.layers.Dense(self.n_categories)(X)
+        X = tf.keras.layers.Dropout(0.5)(X)
+        X = tf.keras.layers.Dense(self.n_categories)(X)
         # Add a softmax activation
-        X = keras.layers.Activation('softmax')(X)
+        X = tf.keras.layers.Activation('softmax')(X)
 
         # Create Model instance which converts sentence_indices into X.
-        model = keras.models.Model(
+        model = tf.keras.models.Model(
             inputs=sentence_indices,
             outputs=X)
 
