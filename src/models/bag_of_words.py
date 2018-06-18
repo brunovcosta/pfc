@@ -1,25 +1,56 @@
 import numpy as np
-from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.feature_extraction.text import TfidfTransformer
+import nltk
+import sklearn
 #from sklearn.naive_bayes import MultinomialNB
-from sklearn.linear_model import SGDClassifier
 from sklearn.pipeline import Pipeline
 from src.datasetAPI import RotaDosConcursos
+from .base_model import BaseModel
 
-class BagOfWords:
-    """
-	mean_result : return the mean result of the SGDClassifier with the test subset
-	"""
-    def __init__(self):
-        self.train_obj = RotaDosConcursos(subset='train')
-        self.test_obj = RotaDosConcursos(subset='test')
 
-        text_clf_svm = Pipeline([
-            ('vect', CountVectorizer()),
-            ('tfidf', TfidfTransformer()),
-            ('clf-svm', SGDClassifier(loss='hinge', penalty='l2', alpha=1e-3, n_iter=5, random_state=42))
+class BagOfWords(BaseModel):
+
+    def __init__(self, random_state=1, frac=1,
+                 group_labels=False,
+                 min_number_per_label=0):
+
+        super(BagOfWords, self).__init__(
+            random_state,
+            frac,
+            group_labels,
+            min_number_per_label)
+
+    def build_model(self):
+        """
+        Returns the model.
+        """
+        #Stemming
+        stemmer = nltk.stem.RSLPStemmer()
+        analyzer = sklearn.feature_extraction.text.CountVectorizer().build_analyzer()
+        def stemmed(doc):
+            return [stemmer.stem(w) for w in analyzer(doc)]
+
+        model = Pipeline([
+            ('bag of words', sklearn.feature_extraction.text.CountVectorizer(
+                tokenizer=nltk.tokenize.word_tokenize,
+                analyzer=stemmed,
+                #ngram_range=(2,2),
+                stop_words=nltk.corpus.stopwords.words('portuguese'),
+                strip_accents='unicode')),
+            ('tf-idf', sklearn.feature_extraction.text.TfidfTransformer()),
+            ('clf-svm', sklearn.linear_model.SGDClassifier(
+                loss='hinge',
+                penalty='l2',
+                alpha=1e-3,
+                n_iter=5,
+                random_state=42))
         ])
 
-        _ = text_clf_svm.fit(self.train_obj.text, self.train_obj.target)
-        predicted_svm = text_clf_svm.predict(self.test_obj.text)
-        self.mean_result = np.mean(predicted_svm == self.test_obj.target)
+        return model
+
+    def execute_model(self):
+        model = self.build_model()
+        model.fit(self.trainObj.text, self.trainObj.target)
+        predicted_svm = model.predict(self.testObj.text)
+        mean_result = np.mean(predicted_svm == self.testObj.target)
+        print(f"Mean result {mean_result}")
+        self.inspect_mispredictions(model, self.testObj, self.testObj.text, 40)
