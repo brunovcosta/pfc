@@ -1,7 +1,7 @@
 from datetime import datetime
 from gensim.models import KeyedVectors
-from .base_model import BaseModel
-from ..utils import TrainValTensorBoard
+from ..base_model import BaseModel
+from ...utils import TrainValTensorBoard
 
 
 class WordEmbeddingModelKeras(BaseModel):

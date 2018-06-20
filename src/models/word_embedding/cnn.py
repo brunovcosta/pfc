@@ -1,7 +1,7 @@
 import numpy as np
 import keras
 from gensim.models import KeyedVectors
-from ..datasetAPI import RotaDosConcursos
+from ...datasetAPI import RotaDosConcursos
 
 class CNN:
     def __init__(self):
