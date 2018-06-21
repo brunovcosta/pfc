@@ -1,0 +1,44 @@
+{
+    "Contabilidade":[
+        "Contabilidade - Analise das Demonstrações Contábeis / Análise de Balanço",
+        "Contabilidade Privada",
+        "Contabilidade Pública",
+        "Contabilidade de Custos"
+    ],
+    "Direito":[
+        "Direito Administrativo",
+        "Direito Ambiental",
+        "Direito Civil",
+        "Direito Comercial / Empresarial",
+        "Direito Constitucional",
+        "Direito Eleitoral",
+        "Direito Financeiro",
+        "Direito Internacional",
+        "Direito Penal",
+        "Direito Penal Militar / Direito Procesual Penal Militar",
+        "Direito Previdenciário",
+        "Direito Procesual Civil",
+        "Direito Procesual Penal",
+        "Direito Procesual Tributário",
+        "Direito Procesual do Trabalho",
+        "Direito Securitário",
+        "Direito Trabalho",
+        "Direito Tributário",
+        "Direito do Consumidor",
+        "Direitos Humanos"
+    ],
+    "Legislação":[
+        "Legislação Estadual, Distrital e Municipal",
+        "Legislação Federal",
+        "Legislação dos Órgãos Federais, Estaduais, Distritais e Municipais e dos Órgãos Internacionais",
+        "Legislação: decretos"
+    ],
+    "Engenharia Agronômica":[
+        "Agronomia (Ver na matéria Engenharia Agronômica)"
+    ],
+    "Finanças":[
+        "Matemática Financeira",
+        "Finanças",
+        "Finanças Públicas"
+    ]
+}
