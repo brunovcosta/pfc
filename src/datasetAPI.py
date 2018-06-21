@@ -11,7 +11,8 @@ class RotaDosConcursos:
 
     def __init__(self, random_state=1, subset='all',
                  frac=1, group_labels=False,
-                 min_number_per_label=0):
+                 min_number_per_label=0,
+                 dict_name="default.json"):
         """
         subset: 'train' or 'test', 'all', optional
             Select the dataset to load: 'train' for the training set, 'test'
@@ -30,6 +31,10 @@ class RotaDosConcursos:
         min_number_per_label: integer
             Minimum number of samples for each category, samples from categories
             with less the minimum are dropped.
+
+        dict_name: string
+            Name of the JSON file with the mapping of the labels to be grouped.
+            (Only used when group_labels is True)
         """
 
         csv_path = 'dataset/rota_dos_concursos.csv'
@@ -73,7 +78,7 @@ class RotaDosConcursos:
             self.df.apply(
                 self._apply_group_labels,
                 axis=1,
-                args=[self._generate_group_labels_dict()])
+                args=[self._generate_group_labels_dict(dict_name)])
         self._drop_labels_with_insufficient_data(min_number_per_label)
         self.df = self.df.sample(frac=frac, random_state=random_state)
         self._one_hot = pd.get_dummies(self.df['label'])
@@ -156,35 +161,20 @@ class RotaDosConcursos:
             axis=0,
             inplace=True)
 
-
     def _apply_group_labels(self, row, convert_dict):
         row.label = convert_dict[row.label]
         return row
 
-    def _generate_group_labels_dict(self):
+    def _generate_group_labels_dict(self, dict_name):
         target_names = self.target.value_counts().index
         convert_dict = {
             label: label for label in target_names}
 
-        #Groping by the prefix in the name
-        def group_topic_by_startwith(name):
-            for topic in target_names:
-                if topic.startswith(name):
-                    convert_dict[topic] = name
-
-        topic_by_startwith_list = [
-            "Contabilidade",
-            "Direito",
-            "Legislação",
-            "Finanças"
-        ]
-
-        for topic in topic_by_startwith_list:
-            group_topic_by_startwith(topic)
-
-        #Special grouping
-        convert_dict["Agronomia (Ver na matéria Engenharia Agronômica)"] = "Engenharia Agronômica"
-        convert_dict["Matemática Financeira"] = "Finanças"
+        with open(f"src/group_dictionaries/{dict_name}", encoding="UTF-8") as file:
+            external_dict = json.load(file)
+        for key, group_list in external_dict.items():
+            for label in group_list:
+                convert_dict[label] = key
 
         return convert_dict
 
