@@ -42,10 +42,10 @@ class RNN(WordEmbeddingModelKeras):
 
         vocab_len = len(self.wordEmbedModel.vocab)
 
-        embedding_layer = keras.layers.embeddings.Embedding(
+        embedding_layer = tf.keras.layers.Embedding(
             vocab_len,
-            self.n_features_per_word,
-            trainable=False)
+            self.n_features_per_word)
+        embedding_layer.trainable = False
         embedding_layer.build((None,))
         embedding_layer.set_weights([self.wordEmbedModel.vectors])
 
@@ -59,7 +59,8 @@ class RNN(WordEmbeddingModelKeras):
         model -- a model instance in Keras
         """
 
-        # Define sentence_indices as the input of the graph, it should be of dtype 'int32' (as it contains indices).
+        # Define sentence_indices as the input of the graph,
+        # it should be of dtype 'int32' (as it contains indices).
         sentence_indices = tf.keras.layers.Input(shape=(self.max_len,), dtype='int32')
 
         # Create the embedding layer pretrained with GloVe Vectors

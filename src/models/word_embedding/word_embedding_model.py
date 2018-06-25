@@ -8,13 +8,13 @@ class WordEmbeddingModelKeras(BaseModel):
 
     def __init__(self, random_state=1, frac=1,
                  n_features_per_word=50,
-                 group_labels=False,
+                 dict_name=None,
                  min_number_per_label=0):
 
         super(WordEmbeddingModelKeras, self).__init__(
             random_state,
             frac,
-            group_labels,
+            dict_name,
             min_number_per_label)
 
         self.n_features_per_word = n_features_per_word
@@ -40,7 +40,7 @@ class WordEmbeddingModelKeras(BaseModel):
 
         tbCallBack = TrainValTensorBoard(
             [self.X_train, self.trainObj.target_one_hot],
-            log_dir=f'./tf_logs/{log_folder_name}',
+            log_dir=f'./logs/tf_logs/{log_folder_name}',
             write_graph=True)
 
         model.fit(

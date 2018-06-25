@@ -1,5 +1,6 @@
 import numpy as np
 import tensorflow as tf
+import nltk
 from .word_embedding_model import WordEmbeddingModelKeras
 
 class SimpleAvg(WordEmbeddingModelKeras):
@@ -11,7 +12,7 @@ class SimpleAvg(WordEmbeddingModelKeras):
         a single vector encoding the meaning of the sentence.
         """
 
-        words = row.clean_text.lower().split()
+        words = nltk.tokenize.word_tokenize(row.clean_text.lower())
 
         avg = np.zeros((self.n_features_per_word,))
         total = len(words)

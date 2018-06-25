@@ -9,10 +9,10 @@ from sklearn.model_selection import train_test_split
 
 class RotaDosConcursos:
 
-    def __init__(self, random_state=1, subset='all',
-                 frac=1, group_labels=False,
+    def __init__(self, random_state=1,
+                 subset='all', frac=1,
                  min_number_per_label=0,
-                 dict_name="default.json"):
+                 dict_name=None):
         """
         subset: 'train' or 'test', 'all', optional
             Select the dataset to load: 'train' for the training set, 'test'
@@ -25,16 +25,15 @@ class RotaDosConcursos:
             0 < frac <=1
             Fraction of the data that is going to be used.
 
-        group_labels: boolean
-            Whether to group labels with similar subjects.
-
         min_number_per_label: integer
             Minimum number of samples for each category, samples from categories
             with less the minimum are dropped.
 
         dict_name: string
-            Name of the JSON file with the mapping of the labels to be grouped.
-            (Only used when group_labels is True)
+            If None, labels with similar subject are not grouped. Otherwise, it
+            is used as the name of the JSON file with the mapping of the labels
+            to be grouped.
+            ("default.json" is a recommended dictionary)
         """
 
         csv_path = 'dataset/rota_dos_concursos.csv'
@@ -74,7 +73,7 @@ class RotaDosConcursos:
             self.df.to_csv(csv_path)
 
         self._drop_inconsistencies()
-        if group_labels:
+        if dict_name is not None:
             self.df.apply(
                 self._apply_group_labels,
                 axis=1,
