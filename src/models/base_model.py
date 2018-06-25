@@ -5,19 +5,19 @@ from ..datasetAPI import RotaDosConcursos
 class BaseModel:
 
     def __init__(self, random_state=1, frac=1,
-                 group_labels=False,
+                 dict_name=None,
                  min_number_per_label=0):
         self.trainObj = RotaDosConcursos(
             subset='train',
             frac=frac,
             random_state=random_state,
-            group_labels=group_labels,
+            dict_name=dict_name,
             min_number_per_label=min_number_per_label)
         self.testObj = RotaDosConcursos(
             subset='test',
             frac=frac,
             random_state=random_state,
-            group_labels=group_labels,
+            dict_name=dict_name,
             min_number_per_label=min_number_per_label)
 
         self.max_len = self.trainObj.max_text_length("text")
