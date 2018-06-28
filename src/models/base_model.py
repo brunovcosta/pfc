@@ -23,14 +23,34 @@ class BaseModel:
         self.max_len = self.trainObj.max_text_length("text")
         self.target_names = self.trainObj.target_names
         self.n_categories = len(self.target_names)
+        self.model = None
+        self.X_inputs = {}
 
-    def build_model(self):
+    def get_model(self):
         """
         Returns the model.
         """
+        if self.model is None:
+            self.model = self._build_model()
+        return self.model
+
+    def _build_model(self):
+        """
+        Returns the model for the first use.
+        """
         raise NotImplementedError
 
-    def execute_model(self):
+    def get_X_input(self, dataObj):
+        try:
+            return self.X_inputs[dataObj]
+        except KeyError:
+            self.X_inputs[dataObj] = self._build_X_input(dataObj)
+            return self.X_inputs[dataObj]
+
+    def _build_X_input(self, dataObj):
+        raise NotImplementedError
+
+    def fit(self, save_metrics=False):
         raise NotImplementedError
 
     def one_hot_to_label(self, prediction):
@@ -40,8 +60,13 @@ class BaseModel:
             categoryNum = np.argmax(prediction)
             return self.target_names[categoryNum]
 
-    def inspect_mispredictions(self, model, dataObj, X, max_inspect_number):
-        pred = model.predict(X)
+    def inspect_mispredictions(self, dataObj_name, max_inspect_number):
+        if dataObj_name == 'train':
+            dataObj = self.trainObj
+        elif dataObj_name == 'test':
+            dataObj = self.testObj
+        X = self.get_X_input(dataObj)
+        pred = self.get_model().predict(X)
         mispredictions_count = 0
         for index, actual_target in enumerate(dataObj.target):
             if self.one_hot_to_label(pred[index]) != actual_target:

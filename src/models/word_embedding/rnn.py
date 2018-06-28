@@ -24,7 +24,7 @@ class RNN(WordEmbeddingModelKeras):
 
         answer_list.append(X_indices)
 
-    def generate_X_input(self, dataObj):
+    def _build_X_input(self, dataObj):
         X_indices = []
         dataObj.df.apply(
             self.row_sentences_to_indices, axis=1,
@@ -51,7 +51,7 @@ class RNN(WordEmbeddingModelKeras):
 
         return embedding_layer
 
-    def build_model(self):
+    def _build_model(self):
         """
         Function creating the model's graph.
 

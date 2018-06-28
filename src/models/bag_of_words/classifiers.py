@@ -1,11 +1,11 @@
 import sklearn
 from sklearn.pipeline import Pipeline
-from ..bag_of_words import BagOfWords
+from .bag_of_words import BagOfWords
 
 
 class SVM(BagOfWords):
 
-    def build_model(self):
+    def _build_model(self):
 
         steps = self.get_initial_pipeline_steps()
         steps.append(
@@ -23,7 +23,7 @@ class SVM(BagOfWords):
 
 class NB(BagOfWords):
 
-    def build_model(self):
+    def _build_model(self):
 
         steps = self.get_initial_pipeline_steps()
         steps.append(

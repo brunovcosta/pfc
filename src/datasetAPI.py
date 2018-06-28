@@ -125,7 +125,8 @@ class RotaDosConcursos:
         # empty text or subject
         no_subject_path = (len(data["subject_path"]) == 0)
         no_valid_text = (len(data["text"]) < 20)
-        if no_subject_path or no_valid_text:
+        image_content = int(data["image_count"]) > 0
+        if no_subject_path or no_valid_text or image_content:
             return
 
         # label

@@ -11,11 +11,11 @@ http://www.aclweb.org/anthology/D14-1181
 
 class CNN(WordEmbeddingModelKeras):
 
-    def generate_X_input(self, dataObj):
+    def _build_X_input(self, dataObj):
         pass
         # return np.array
 
-    def build_model(self):
+    def _build_model(self):
         pass    
         # return keras model
         """
