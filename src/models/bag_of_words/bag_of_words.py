@@ -25,10 +25,15 @@ class BagOfWords(BaseModel):
 
         return steps
 
-    def execute_model(self):
-        model = self.build_model()
-        model.fit(self.trainObj.text, self.trainObj.target)
-        predicted = model.predict(self.testObj.text)
-        mean_result = np.mean(predicted == self.testObj.target)
-        print(f"Mean result {mean_result}")
-        self.inspect_mispredictions(model, self.testObj, self.testObj.text, 40)
+    def _build_X_input(self, dataObj):
+        return dataObj.text
+
+    def fit(self, save_metrics=False):
+        model = self.get_model()
+        model.fit(
+            self.get_X_input(self.trainObj),
+            self.trainObj.target)
+        if save_metrics:
+            predicted = model.predict(self.get_X_input(self.testObj))
+            mean_result = np.mean(predicted == self.testObj.target)
+            print(f"Mean result {mean_result}")

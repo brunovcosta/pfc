@@ -1,5 +1,3 @@
-from . import datasetAPI
-from . import extractor
+from .datasetAPI import RotaDosConcursos
 from . import models
-from . import notebooks
 from . import utils
