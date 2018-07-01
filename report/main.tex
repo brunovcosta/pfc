@@ -41,6 +41,8 @@
 \usepackage{stringstrings}
 \usepackage{pgffor}
 \usepackage{pdftexcmds}
+\usepackage{tikz}
+\usetikzlibrary{calc,trees,positioning,arrows,chains,shapes.geometric,  decorations.pathreplacing,decorations.pathmorphing,shapes,  matrix,shapes.symbols}
 
 % -----
 % MARGENS DO DOCUMENTO DE PFC
@@ -109,7 +111,8 @@
 \include{cap-03}
 \include{cap-04}
 \include{cap-05}
-\include{cronograma-tmp}
+\include{cap-06}
+%\include{cronograma-tmp}
 
 % -----
 % PARTE DE REFERÊCIAS BIBLIOGRÁFICAS DE PFC
@@ -126,19 +129,19 @@
 %  Se o documento de PFC não tiver apêndices REMOVER AS LINHAS ABAIXO
 %  Adicionar os arquivos .tex de apêndice ao documento com comando \include{•}
 % -----
-\inappendix
-\include{apendice}
-\outappendix
-
-% -----
-% PARTE DE ANEXO DE PFC
-%
-%  Se o documento de PFC não tiver anexos REMOVER AS LINHAS ABAIXO
-%  Adicionar os arquivos .tex de anexo ao documento com comando \include{•}
-% -----
-\inannex
-\include{anexo}
-\outannex
+% \inappendix
+% \include{apendice}
+% \outappendix
+% 
+% % -----
+% % PARTE DE ANEXO DE PFC
+% %
+% %  Se o documento de PFC não tiver anexos REMOVER AS LINHAS ABAIXO
+% %  Adicionar os arquivos .tex de anexo ao documento com comando \include{•}
+% % -----
+% \inannex
+% \include{anexo}
+% \outannex
 
 % -----
 % FIM DO DOCUMENTO DE PFC
