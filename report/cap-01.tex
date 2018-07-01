@@ -32,73 +32,83 @@
 
 \chapter{Introdução}
 \noindent
-O objetivo deste trabalho é desenvolver um algoritmo que classifique uma questão inédita de concurso dentre um conjunto de assuntos pré-determinados. Para atingir este objetivo, serão exploradas técnicas de aprendizado de máquina e processamento de linguagem natural.
-
 
 \section{Motivação}
-%porque estudar o tema é importante/relevante?
+Questões são parte fundamental do processo de aprendizado e sua classificação por assunto e dificuldade é de suma importância nas mais variadas aplicações educacionais.
 
-\subsection{Plataformas de auxílio ao aprendizado}
-Neste relatório, será entendido por PAA qualquer software que tenha objetivo pedagógico. Existe um mercado de educação à distância (EAD) que por seu caráter remoto, propicia o uso de tecnologia digital para a facilitação do ensino.  Esse mercado tem se tornado competitivo e ganhado cada vez mais importância.
+Por meio dessa classificação, professores podem elaborar testes de maneira assistida e mais eficiente.
 
-\subsection{Classificação automática de assuntos}
+Outra aplicação da classificação de questões trata das ferramentas adaptativas. Nesse tipo de ferramenta, estudantes podem executar baterias de exercícios em série cujo conteúdo varia de acordo com o desempenho de acerto otimizando o aprendizado.
 
-Será entendido por CAA qualquer método de classificação de textos exequível via software sem auxílio de um operador. Os principais métodos existentes são listados na seção de Métodos.
-A CAA já é amplamente utilizada na indústria, por exemplo, em sites de notícias, gerenciadores de emails ou motores de busca.
-
-\subsection{Loona}
-Loona é um motor de busca em desenvolvimento pela empresa PaperX. Trata-se de uma ferramenta de busca de vídeos por imagem.
-
-\begin{figure}[!ht]
-	\centering
-	\includegraphics[width=0.4\textwidth]{figures/loona.png}   
-	\caption{Funcionamento do loona}
-	\label{fig:loona}
-\end{figure}
-
+Questões são muito usadas como forma de avaliação de conhecimento em processos seletivos e sua maioria consiste de textos e imagens justapostos divididos entre enunciado e alternativas. A recorrência na forma permite que métodos específicos de classificação tenham mais eficiência que abordagens em texto genérico.
 
 \section{Objetivo}
-%que tentará ser alcançado (principal e secundários)
-O funcionamento do motor de busca em questão é dividido em três etapas:
-\begin{itemize}
-\item Reconhecimento ótico de caracteres (OCR); 
-\item Classificação de texto e
-\item Busca
-\end{itemize}
+Este trabalho tem como objetivo a implementação, teste e comparação das principais técnicas de classificação de texto aplicando-as em questões de concursos públicos.
 
-\begin{figure}[!ht]
-	\centering
-	\includegraphics[width=0.4\textwidth]{figures/fluxograma.png}   
-	\caption{Fluxo funcional da ferramenta}
-	\label{fig:fluxograma}
-\end{figure}
+Para fim de simplificação de escopo, serão consideradas apenas questões objetivas, que contenham alternativas, e retiradas de uma mesma fonte conforme explicitado no capítulo 3.
 
+Adicionalmente, serão consideradas apenas técnicas de classificação por assunto limitada a nível de área do conhecimento (ex: computação/cinema/medicina/direito), sem levar em consideração as diferenças entre matérias (ex: linguagens formais/inteligência artificial/mineração de dados).
 
-Este trabalho será restrito a etapa central: Classificação de texto.
+\section{Abordagem}
+A abordagem escolhida por este projeto foi a de obter uma base de dados de questões e tratá-la da maneira mais conveniente de modo a se adequar aos seus objetivos. Tal obtenção e tratamento são abordadas no capítulo 3.
 
+Com a base de dados, a próxima etapa é a de utilizar as principais técnicas de classificação de textos genéricos, descritas no capítulo 4, na classificação do assunto de suas questões. Nessa etapa, cada um dos métodos será otimizado para essa base de dados, validando suas arquiteturas e seus hiperparâmetros. Com esses resultados, é possível comparar a performance desses métodos.
 
-% \section{Justificativa}
-%a importância do trabalho no contexto institucional
+Com base nessa comparação, avalia-se a viabilidade de implementar um modelo unificado dos modelos que utilizará os resultados anteriores e determinará qual é a melhor previsão de assunto da questão (Ensemble learning). O maior detalhamento desses modelos está no capítulo 5.
 
 \section{Metodologia}
-%como o trabalho deverá ser conduzido
-A primeira etapa do trabalho corresponde à obtenção de dados para serem utilizados nos algoritmos de aprendizado de máquina. Isso é feito a partir de Web scraping de questões de concursos públicos já rótuladas com os seus respectivos assuntos.
+\label{sec:metodology}
+O trabalho será dividido em seis etapas conforme a figura \ref{fig:fluxogram}.
 
+\begin{figure}[!ht]
+  \centering
+  \tikzstyle{block} = [rectangle, draw, text width=10em, text centered, rounded      corners, minimum height=3em]
+  \begin{tikzpicture}
+   [node distance=2cm,
+   start chain=going below,]
+    \node (n1) at (0,0) [block]  {Crawler};
+    \node (n2) [block, below of=n1] {Tratamento};
+    \node (n3) [block, below of=n2] {Implementação};
+    \node (n4) [block, below of=n3] {Análise};
+    \node (n5) [block, below of=n4] {Desenvolvimento};
+    \node (n6) [block, below of=n5] {Avaliação};
+
+    \draw [->] (n1) -- (n2);
+    \draw [->] (n2) -- (n3);
+    \draw [->] (n3) -- (n4);
+    \draw [->] (n4) -- (n5);
+    \draw [->] (n5) -- (n6);
+    %\draw [->] (n4.east) -| ++(1,0) |- (n3.east);
+    %\draw [->] (n4.west) -| ++(-1,0) |- (n2.west);
+  \end{tikzpicture}
+  \caption{Fluxograma de trabalho}
+  \label{fig:fluxogram}
+\end{figure}
+\subsection{Crawler}
+A primeira etapa do trabalho corresponde à obtenção de dados para serem utilizados nos algoritmos de aprendizado de máquina. Isso é feito a partir de Web scraping de questões de concursos públicos já rotuladas com os seus respectivos assuntos.
+\subsection{Tratamento}
 Em seguida, há uma fase de processamento de dados que remove inconsistências e prepara uma interface ideal para os algoritmos que serão aplicados posteriormente.
+\subsection{Implementação}
+A terceira fase consiste na implementação de alguns modelos consagrados de classificação genérica de texto no conjunto de dados em questão.
+\subsection{Análise}
+A seguir, será feita uma análise de desempenho para cada algoritmo que poderá resultar na variação de seus hiperparâmetros implementados e tratamento do conjunto de dados.
+\subsection{Desenvolvimento}
+Da análise obtida na etapa anterior será desenvolvida uma técnica híbrida especializada em questões.
+\subsection{Avaliação}
+Por fim, os resultados obtidos serão avaliados e contrastados com os modelos reais para aferição de alcance dos objetivos.
 
-A terceira fase é a parte central do trabalho e consiste em explorar diferentes modelos para a classificação de questões. Cada um desses modelos possui suas particularidades com diferentes arquiteturas e hiperparâmetros para uma otimização de acordo com o contexto dos dados utilizados.
-
-Como etapa final, a solução ótima encontrada de classificação é implementada na plataforma de auxílio ao aprendizado da paperx.com.br para o uso em ferramentas de busca.
-
-
-\section{Estrutura}
+\section{Organização}
 %do documento
 Sobre os capítulos subsequentes a seguinte distribuição de conteúdo:
 \begin{itemize}
-\item Capítulo 2: 
-fundamentação teórica sobre cada um dos algoritmos de classificação que serão utilizados;
-\item Capítulo 3:
-descrição da implementação para cada uma das etapas descritas na metodologia;
-\item Capítulo 4:
-comparação dos resultados dos entre diferentes modelos implementados.
+\item Capítulo 2 - Trabalhos relacionados:
+exposição de trabalhos relacionados ao tema de classificação de texto;
+\item Capítulo 3 - Obtenção da base de dados:
+metodologia utilizada para obtenção e processamento da base de dados utilizada como referência no projeto;
+\item Capítulo 4 - Fundamentação Teórica:
+descrição dos principais conceitos utilizados em cada um dos algoritmos de classificação que serão implementados;
+\item Capítulo 5 - Algoritmos de classificação:
+descrição, metodologia de implementação e resultados de cada um dos algoritmos implementados;
+\item Capítulo 6 - Comparação e conclusão:
+comparação dos resultados dos entre diferentes modelos e algoritmos implementados no capítulo anterior.
 \end{itemize}
