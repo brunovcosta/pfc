@@ -1,4 +1,6 @@
 import numpy as np
+import sklearn
+import matplotlib.pyplot as plt
 from ..datasetAPI import RotaDosConcursos
 
 
@@ -77,3 +79,55 @@ class BaseModel:
                 mispredictions_count += 1
                 if mispredictions_count > max_inspect_number:
                     break
+
+    def get_confusion_matrix(self, dataObj_name):
+        if dataObj_name == 'train':
+            dataObj = self.trainObj
+        elif dataObj_name == 'test':
+            dataObj = self.testObj
+
+        X = self.get_X_input(dataObj)
+        y_pred = self.get_model().predict(X)
+        y_pred = list(map(self.one_hot_to_label, y_pred))
+
+        cnf_matrix = sklearn.metrics.confusion_matrix(
+            dataObj.target.tolist(),
+            y_pred)
+
+        return cnf_matrix
+
+    def plot_confusion_matrix(self, dataObj_name,
+                              normalize=False,
+                              title='Confusion matrix',
+                              cmap=plt.cm.Blues):
+        """
+        This function plots the confusion matrix.
+        Normalization can be applied by setting `normalize=True`.
+        """
+        cm = self.get_confusion_matrix(dataObj_name)
+
+        classes = self.target_names
+
+        if normalize:
+            cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
+            print("Normalized confusion matrix")
+        else:
+            print('Confusion matrix, without normalization')
+
+        plt.imshow(cm, interpolation='nearest', cmap=cmap)
+        plt.title(title)
+        plt.colorbar()
+        tick_marks = np.arange(len(classes))
+        plt.xticks(tick_marks, classes, rotation=45)
+        plt.yticks(tick_marks, classes)
+
+        fmt = '.2f' if normalize else 'd'
+        thresh = cm.max() / 2.
+        for i in range(cm.shape[0]):
+            for j in range(cm.shape[1]):
+                plt.text(j, i, format(cm[i, j], fmt),
+                         horizontalalignment="center",
+                         color="white" if cm[i, j] > thresh else "black")
+        plt.tight_layout()
+        plt.ylabel('True label')
+        plt.xlabel('Predicted label')
