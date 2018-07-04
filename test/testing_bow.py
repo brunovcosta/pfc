@@ -4,7 +4,7 @@ import sys
 module_root = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(module_root))
 
-from src.models.bag_of_words.classifiers import *
+from src.models.bag_of_words.classifiers import SVM
 
 
 model = SVM(
