@@ -2,6 +2,7 @@ import json
 import re
 import glob
 import os
+import nltk
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
@@ -46,7 +47,7 @@ class RotaDosConcursos:
                                          "label": str})
         else:
             texts = []
-            clean_texts = []
+            splitted_texts = []
             labels = []
             ids = []
 
@@ -54,7 +55,7 @@ class RotaDosConcursos:
             for filename in glob.iglob(dataset_path, recursive=True):
                 filename = filename.replace("\\", '/')
                 try:
-                    self._json_extraction(filename, texts, clean_texts, labels, ids)
+                    self._json_extraction(filename, texts, splitted_texts, labels, ids)
                 except UnicodeDecodeError:
                     # Windows error: can't decode byte 0x81
                     print("byte 0x81 error {}".format(filename))
@@ -64,7 +65,7 @@ class RotaDosConcursos:
 
             self.df = pd.DataFrame({
                 "text": texts,
-                "clean_text": clean_texts,
+                "splitted_text": splitted_texts,
                 "label": labels
             }, index=ids)
 
@@ -97,15 +98,16 @@ class RotaDosConcursos:
         return self.df['text']
 
     @property
-    def clean_text(self):
-        return self.df['clean_text']
+    def splitted_text(self):
+        return self.df['splitted_text']
 
     @property
     def target_one_hot(self):
         return self._one_hot
 
-    def max_text_length(self, text_column):
-        return self.max_text_length_dict[text_column]
+    @property
+    def max_text_length(self):
+        return self.max_text_length
 
     def show_target_distribution(self):
         if len(self.target_names) <= 10:
@@ -119,7 +121,7 @@ class RotaDosConcursos:
             title='labels distribution')
         plt.show()
 
-    def _json_extraction(self, filename, texts, clean_texts, labels, ids):
+    def _json_extraction(self, filename, texts, splitted_texts, labels, ids):
         data = json.load(open(filename), encoding='UTF-8')
 
         # empty text or subject
@@ -137,20 +139,23 @@ class RotaDosConcursos:
         for alternative in data["alternatives"]:
             text += " " + alternative
         text = ' '.join(text.splitlines())
-        texts.append(text.strip())
-
-        # clean_text
+        # cleaning text
         word_regex = r'(\w+(-\w+)?)'
         clean_tokens = re.findall(word_regex, text, re.UNICODE)
-        clean_text = ' '.join([pair[0] for pair in clean_tokens])
-        clean_texts.append(clean_text)
+        text = ' '.join([pair[0] for pair in clean_tokens])
+        text = text.lower()
+        texts.append(text)
+
+        # splitted_text
+        splitted_text = nltk.tokenize.word_tokenize(text)
+        splitted_texts.append(splitted_text)
 
         # id
         ids.append(data["id"])
 
     def _drop_inconsistencies(self):
-        # Empty clean text
-        indexes_to_drop = self.df.loc[self.df.clean_text == ""].index
+        # Empty text after cleaning
+        indexes_to_drop = self.df.loc[self.df.text == ""].index
         self.df.drop(indexes_to_drop, inplace=True)
 
         #Duplicates
@@ -192,18 +197,8 @@ class RotaDosConcursos:
         self.df.drop(indexes_to_drop, inplace=True)
 
     def _save_max_text_length(self):
-
-        def max_text_length(text_column):
-            """
-            text_column : 'text' or 'clean_text'
-            """
-            splitted_text_len = map(lambda text: len(text.split()), self.df.loc[:, text_column])
-            return max(splitted_text_len)
-
-        self.max_text_length_dict = {
-            'text': max_text_length('text'),
-            'clean_text': max_text_length('clean_text')
-        }
+        splitted_text_len = map(len, self.df.loc.splitted_text)
+        self.max_text_length = max(splitted_text_len)
 
     def _save_subset(self, subset, random_state):
         if subset == 'all':

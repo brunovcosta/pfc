@@ -22,8 +22,7 @@ class BaseModel:
             dict_name=dict_name,
             min_number_per_label=min_number_per_label)
 
-        self.max_text_len = self.trainObj.max_text_length("text")
-        self.max_clean_text_len = self.trainObj.max_text_length("clean_text")
+        self.max_text_len = self.trainObj.max_text_length
         self.target_names = self.trainObj.target_names
         self.n_categories = len(self.target_names)
         self.model = None
