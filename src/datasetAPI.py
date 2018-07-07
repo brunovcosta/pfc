@@ -107,7 +107,7 @@ class RotaDosConcursos:
 
     @property
     def max_text_length(self):
-        return self.max_text_length
+        return self.max_text_len
 
     def show_target_distribution(self):
         if len(self.target_names) <= 10:
@@ -199,8 +199,8 @@ class RotaDosConcursos:
         self.df.drop(indexes_to_drop, inplace=True)
 
     def _save_max_text_length(self):
-        splitted_text_len = map(len, self.df.splitted_text)
-        self.max_text_length = max(list(splitted_text_len))
+        splitted_text_len = list(map(len, self.df.splitted_text))
+        self.max_text_len = max(splitted_text_len)
 
     def _save_subset(self, subset, random_state):
         if subset == 'all':
