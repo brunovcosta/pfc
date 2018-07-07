@@ -22,7 +22,8 @@ class BaseModel:
             dict_name=dict_name,
             min_number_per_label=min_number_per_label)
 
-        self.max_len = self.trainObj.max_text_length("text")
+        self.max_text_len = self.trainObj.max_text_length("text")
+        self.max_clean_text_len = self.trainObj.max_text_length("clean_text")
         self.target_names = self.trainObj.target_names
         self.n_categories = len(self.target_names)
         self.model = None
@@ -105,14 +106,10 @@ class BaseModel:
         Normalization can be applied by setting `normalize=True`.
         """
         cm = self.get_confusion_matrix(dataObj_name)
-
         classes = self.target_names
 
         if normalize:
             cm = cm.astype('float') / cm.sum(axis=1)[:, np.newaxis]
-            print("Normalized confusion matrix")
-        else:
-            print('Confusion matrix, without normalization')
 
         plt.imshow(cm, interpolation='nearest', cmap=cmap)
         plt.title(title)

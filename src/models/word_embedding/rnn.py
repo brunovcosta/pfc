@@ -1,5 +1,6 @@
 import tensorflow as tf
 import numpy as np
+import nltk
 from .word_embedding_model import WordEmbeddingModelKeras
 
 
@@ -14,7 +15,7 @@ class RNN(WordEmbeddingModelKeras):
 
         X_indices = np.zeros((max_len, ))
 
-        sentence_words = row.text.lower().split()
+        sentence_words = nltk.tokenize.word_tokenize(row.clean_text.lower())
 
         for index, word in enumerate(sentence_words):
             try:

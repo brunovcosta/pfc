@@ -133,7 +133,10 @@ class RotaDosConcursos:
         labels.append(data["subject_path"][0].strip())
 
         # text
-        text = ' '.join(data["text"].splitlines())
+        text = data["text"]
+        for alternative in data["alternatives"]:
+            text += " " + alternative
+        text = ' '.join(text.splitlines())
         texts.append(text.strip())
 
         # clean_text
