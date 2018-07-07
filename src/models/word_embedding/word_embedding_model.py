@@ -11,8 +11,6 @@ class WordEmbeddingModelKeras(BaseModel):
                  dict_name=None,
                  min_number_per_label=0):
 
-        print("WordEmbedModelKeras __init__")
-
         super(WordEmbeddingModelKeras, self).__init__(
             random_state,
             frac,

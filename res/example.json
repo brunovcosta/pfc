@@ -1,0 +1,21 @@
+{
+    "alternatives": [
+        " a. Diversos\ra Duplicatas Descontadas\rBancos conta Movimento\u00a0 \u00a0R$150.0,0\rJuros Ativos\u00a0 R$ 9.0,0 R$159.0,0 ",
+        " b. Duplicatas Descontadas\ra Diversos\ra Bancos conta Movimento\u00a0R$150.0,0\u00a0\ra Juros Ativos\u00a0 R$ 9.0,0 R$159.0,0 ",
+        " c. Bancos conta Movimento\ra Diversos\ra Duplicatas a Receber\u00a0R$150.0,0\ra Juros Ativos\u00a0 R$ 9.0,0 R$159.0,0 ",
+        " d. Bancos conta Movimento\ra Diversos\u00a0\r\u00a0a Duplicatas Descontadas\u00a0 \u00a0 R$150.0,0\ra Juros Ativos\u00a0 R$ 9.0,0 R$159.0,0 ",
+        " e. Diversos\ra Diversos\rDuplicatas Descontadas\u00a0 R$150.0,0\rBancos conta Movimento\u00a0 \u00a0R$ 9.0,0 R$159.0,0\ra Duplicatas a Receber\u00a0 \u00a0 R$150.0,0\ra Juros Ativos\u00a0 R$ 9.0,0 R$159.0,0 "
+    ],
+    "answer": null,
+    "banca": " Escola de Administra\u00e7\u00e3o Fazend\u00e1ria (ESAF) ",
+    "concurso": " Secretaria do Tesouro Nacional (STN) 205 ",
+    "id": "10",
+    "image_count": 0,
+    "nivel": "Superior",
+    "prova": " Analista de Finan\u00e7as e Controle AFC - \u00c1rea Cont\u00e1bil-Financeira (Prova 2 e 3 - Espec\u00edfica) ",
+    "subject_path": [
+        " Contabilidade Privada ",
+        " Lan\u00e7amentos "
+    ],
+    "text": " A empresa Mersa S/A, em agosto de 204, contratou opera\u00e7\u00e3o de desconto de duplicatas no valor de R$150.0,0, com encargos iniciais de 4%. Em 15 de setembro o t\u00edtulo venceu, mas o cliente n\u00e3o o quitou, tendo a empresa acertado a opera\u00e7\u00e3o com o Banco, mantendo a duplicata em cobran\u00e7a. Em 30 de setembro o cliente providenciou a quita\u00e7\u00e3o da letra no Banco, com juros de 6%.\rPara registrar o evento de 30/09/04 o Setor de Contabilidade da Mersa S/A efetuou o seguinte lan\u00e7amento: "
+}
