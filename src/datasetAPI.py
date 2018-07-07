@@ -200,7 +200,7 @@ class RotaDosConcursos:
 
     def _save_max_text_length(self):
         splitted_text_len = map(len, self.df.splitted_text)
-        self.max_text_length = max(splitted_text_len)
+        self.max_text_length = max(list(splitted_text_len))
 
     def _save_subset(self, subset, random_state):
         if subset == 'all':
