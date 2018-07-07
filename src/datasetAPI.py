@@ -159,7 +159,9 @@ class RotaDosConcursos:
         self.df.drop(indexes_to_drop, inplace=True)
 
         #Duplicates
-        self.df.drop_duplicates(inplace=True)
+        self.df.drop_duplicates(
+            subset=["text", "label"],
+            inplace=True)
 
         #Mixed categories
         boolean_drop = (self.target == "Conhecimentos Específicos de um determinado Cargo/Área")
