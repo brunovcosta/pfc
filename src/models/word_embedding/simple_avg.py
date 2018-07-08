@@ -1,22 +1,17 @@
 import numpy as np
 import tensorflow as tf
-import nltk
 from .word_embedding_model import WordEmbeddingModelKeras
 
 class SimpleAvg(WordEmbeddingModelKeras):
 
     def row_sentence_to_avg(self, row, answer_list):
         """
-        Converts a sentence (string) into a list of words (strings). Extracts
-        the word2Vec representation of each word and averages its value into
-        a single vector encoding the meaning of the sentence.
+        Extracts the word2Vec representation of each word and averages
+        its value into a single vector encoding the meaning of the sentence.
         """
-
-        words = nltk.tokenize.word_tokenize(row.clean_text.lower())
-
         avg = np.zeros((self.n_features_per_word,))
-        total = len(words)
-        for word in words:
+        total = len(row.splitted_text)
+        for word in row.splitted_text:
             try:
                 avg += self.wordEmbedModel.word_vec(word)
             except KeyError:
@@ -24,7 +19,7 @@ class SimpleAvg(WordEmbeddingModelKeras):
         if total != 0:
             avg = avg / total
         else:
-            print("Clean text with no words in the embedding model for index {} .".format(row.name))
+            print("Text with no words in the embedding model for index {} .".format(row.name))
         answer_list.append(avg)
 
     def _build_X_input(self, dataObj):
