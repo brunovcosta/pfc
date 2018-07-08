@@ -9,8 +9,8 @@ from src.models.bag_of_words.classifiers import SVM
 
 model = SVM(
     random_state=1,
-    frac=0.001,
+    frac=1,
     dict_name="default.json",
     min_number_per_label=1000)
-model.fit(save_metrics=False)
+model.fit(save_metrics=True)
 model.inspect_mispredictions('test', 3)

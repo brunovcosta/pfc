@@ -11,14 +11,14 @@ html = Nokogiri::HTML input_file.read
 
 output_data = {
 	id: (input_path.scan /\d+/).last,
-	text: (html.css ".panel-questao .panel-heading").text.gsub(/\n/,'').squeeze,
-	subject_path: (html.css ".materia b").map{|b| b.text.gsub(/\n/,'').squeeze},
-	alternatives: (html.css ".panel-questao .panel-body ul li").map{|li|li.text.gsub(/\n/,'').squeeze.gsub(/^ ?[A-Z].\ /,'')},
+	text: (html.css ".panel-questao .panel-heading").text.gsub(/\n/,'').squeeze(" "),
+	subject_path: (html.css ".materia b").map{|b| b.text.gsub(/\n/,'').squeeze(" ")},
+	alternatives: (html.css ".panel-questao .panel-body ul li").map{|li|li.text.gsub(/\n/,'').squeeze(" ").gsub(/^ ?[A-Z].\ /,'')},
 	image_count: (html.css ".panel-questao .panel-heading img").count,
-	concurso: (html.xpath "//div/p/a[contains(@href,'/concurso/')]").text.gsub(/\n/,'').squeeze,
-	prova: (html.xpath "//div/p/a[contains(@href,'/prova/')]").text.gsub(/\n/,'').squeeze,
-	banca: (html.xpath "//div/p/a[not(contains(@href,'/prova/') or contains(@href,'/concurso/'))]").text.gsub(/\n/,'').squeeze,
-	nivel: (html.xpath "//p[contains(text(),'Nível: ')]").text.gsub(/\n/,'').squeeze.split(': ')[1],
+	concurso: (html.xpath "//div/p/a[contains(@href,'/concurso/')]").text.gsub(/\n/,'').squeeze(" "),
+	prova: (html.xpath "//div/p/a[contains(@href,'/prova/')]").text.gsub(/\n/,'').squeeze(" "),
+	banca: (html.xpath "//div/p/a[not(contains(@href,'/prova/') or contains(@href,'/concurso/'))]").text.gsub(/\n/,'').squeeze(" "),
+	nivel: (html.xpath "//p[contains(text(),'Nível: ')]").text.gsub(/\n/,'').squeeze(" ").split(': ')[1],
 	answer: ("ABCDE".index (html.css '.resposta-correta-escondida span').text.gsub(/\n|\ /,'')[0])
 }
 
