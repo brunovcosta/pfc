@@ -1,3 +1,5 @@
+#TODO this should substitute htmlKiller and should use multithread
+#https://www.tutorialspoint.com/ruby/ruby_multithreading.htm
 linkPrefix = "http://rotadosconcursos.com.br/questoes-de-concursos/filtro_avancado?anos[]=2018"
 
 for year in 2017.downto(1998)
@@ -20,18 +22,23 @@ end
 maxId = 2000000
 nullCounter = 0
 for fileNumber in 0..maxId
-	newFile = "#{fileNumber}.html"
-	puts "File " + newFile
+	htmlFile = "#{fileNumber}.html"
+	puts "File " + htmlFile
 	Dir.chdir "#{fileNumber%1000}"
 	linkTest = linkPrefix + fileNumber.to_s
-	`curl -sLg '#{linkTest}' > #{newFile}`
-	extractedText = `xmllint --html --format --xpath '//div[@class="page-header"]/h1/text()' #{newFile} 2> /dev/null`
+	`curl -sLg '#{linkTest}' > #{htmlFile}`
+	extractedText = `xmllint --html --format --xpath '//div[@class="page-header"]/h1/text()' #{htmlFile} 2> /dev/null`
 	
 	if extractedText == "OOOPS!"
-		puts "File #{newFile} was null"
+		puts "File #{htmlFile} was null"
 		nullCounter = nullCounter + 1
 		puts "Current fraction of null pages is around #{100*nullCounter/(i+1)} %"
-		`rm #{newFile}`
+	else
+		jsonFile = "#{fileNumber}.json"
+		`ruby ../../../src/extractor/extractor.rb "#{htmlFile}" "#{jsonFile}"`
 	end
+
+	`rm #{htmlFile}`
+
 	Dir.chdir ".."
 end
