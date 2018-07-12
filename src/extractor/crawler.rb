@@ -1,5 +1,4 @@
-#TODO this should substitute htmlKiller and should use multithread
-#https://www.tutorialspoint.com/ruby/ruby_multithreading.htm
+#https//www.tutorialspoint.com/ruby/ruby_multithreading.htm
 linkPrefix = "http://rotadosconcursos.com.br/questoes-de-concursos/filtro_avancado?anos[]=2018"
 
 for year in 2017.downto(1998)
@@ -37,8 +36,8 @@ for fileNumber in 0..maxId
 		jsonFile = "#{fileNumber}.json"
 		`ruby ../../../src/extractor/extractor.rb "#{htmlFile}" "#{jsonFile}"`
 	end
-
+	
 	`rm #{htmlFile}`
-
+	
 	Dir.chdir ".."
 end
