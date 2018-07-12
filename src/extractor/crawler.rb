@@ -1,4 +1,3 @@
-#https//www.tutorialspoint.com/ruby/ruby_multithreading.htm
 linkPrefix = "http://rotadosconcursos.com.br/questoes-de-concursos/filtro_avancado?anos[]=2018"
 
 for year in 2017.downto(1998)
