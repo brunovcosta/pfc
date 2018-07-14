@@ -12,9 +12,6 @@ Dir.chdir "rawData"
 
 for i in 0..1000
 	`mkdir #{i}`
-	if (i+1)%100 == 0
-		puts "#{(i+1)/10}%"
-	end
 end
 
 maxId = 2000000

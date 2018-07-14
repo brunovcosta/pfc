@@ -118,19 +118,20 @@ class RotaDosConcursos:
 
     @property
     def max_text_length(self):
-        return self.max_text_len
+        return self._max_text_len
 
-    def show_target_distribution(self):
+    def save_pie_graph(self):
         if len(self.target_names) <= 10:
             autopct = '%1.1f%%'
         else:
             autopct = None
+        plt.figure(figsize=(14, 14))
         self.target.value_counts().plot(
             kind='pie',
             autopct=autopct,
             legend=False,
             title='labels distribution')
-        plt.show()
+        plt.savefig(f'logs/graph_figures/pie_graph.png')
 
     def _json_extraction(self, filename, texts, splitted_texts, labels, ids):
         data = json.load(open(filename), encoding='UTF-8')
@@ -211,7 +212,7 @@ class RotaDosConcursos:
 
     def _save_max_text_length(self):
         splitted_text_len = list(map(len, self.df.splitted_text))
-        self.max_text_len = max(splitted_text_len)
+        self._max_text_len = max(splitted_text_len)
 
     def _save_subset(self, subset, random_state):
         if subset == 'all':
