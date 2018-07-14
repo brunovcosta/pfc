@@ -28,9 +28,6 @@ class TrainValTensorBoard(tf.keras.callbacks.TensorBoard):
             self._writer,
             epoch)
 
-        # Discard keras default logs
-        logs = {}
-
         super(TrainValTensorBoard, self).on_epoch_end(epoch, logs)
 
     def on_train_end(self, logs=None):

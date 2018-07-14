@@ -28,7 +28,7 @@ class BagOfWords(BaseModel):
     def _build_X_input(self, dataObj):
         return dataObj.text
 
-    def fit(self, save_metrics=False):
+    def fit(self, save_metrics=False, save_checkpoints=False):
         model = self.get_model()
         model.fit(
             self.get_X_input(self.trainObj),
