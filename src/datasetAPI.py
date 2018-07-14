@@ -40,11 +40,14 @@ class RotaDosConcursos:
         csv_path = 'dataset/rota_dos_concursos.csv'
 
         if os.path.isfile(csv_path):
-            self.df = pd.read_csv(csv_path,
-                                  encoding='UTF-8',
-                                  index_col=0,
-                                  dtype={"text": str,
-                                         "label": str})
+            self.df = pd.read_csv(
+                csv_path,
+                encoding='UTF-8',
+                index_col=0,
+                converters={
+                    "text": str,
+                    "label": str,
+                    "splitted_text": lambda x: x.strip("[]").split(", ")})
         else:
             texts = []
             splitted_texts = []
@@ -155,7 +158,7 @@ class RotaDosConcursos:
 
     def _drop_inconsistencies(self):
         # Empty text after cleaning
-        indexes_to_drop = self.df.loc[self.df.text == ""].index
+        indexes_to_drop = self.df[self.df.text == ""].index
         self.df.drop(indexes_to_drop, inplace=True)
 
         #Duplicates
