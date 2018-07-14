@@ -26,6 +26,9 @@ class WordEmbeddingModelKeras(BaseModel):
             wordEmbedPath,
             unicode_errors="ignore")
 
+    def __repr__(self):
+        return f"{type(self).__name__}_{self.n_features_per_word}"
+
     def summary(self):
         self.get_model().summary()
 
