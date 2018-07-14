@@ -9,7 +9,7 @@ from src.models.word_embedding import SimpleAvg
 
 
 model = SimpleAvg(
-    n_features_per_word=1000,
+    n_features_per_word=50,
     random_state=1,
     dict_name="default.json",
     min_number_per_label=10000,
