@@ -18,6 +18,7 @@ class WordEmbeddingModelKeras(BaseModel):
             dict_name,
             min_number_per_label)
 
+        print("loading gensim model...")
         self.n_features_per_word = n_features_per_word
         wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(
             self.n_features_per_word)
