@@ -27,16 +27,19 @@ class BaseModel:
         self.max_text_len = self.trainObj.max_text_length
         self.target_names = self.trainObj.target_names
         self.n_categories = len(self.target_names)
-        self.model = None
-        self.X_inputs = {}
+        self._model = None
+        self._X_inputs = {}
+
+    def __repr__(self):
+        return type(self).__name__
 
     def get_model(self):
         """
         Returns the model.
         """
-        if self.model is None:
-            self.model = self._build_model()
-        return self.model
+        if self._model is None:
+            self._model = self._build_model()
+        return self._model
 
     def _build_model(self):
         """
@@ -46,10 +49,10 @@ class BaseModel:
 
     def get_X_input(self, dataObj):
         try:
-            return self.X_inputs[dataObj]
+            return self._X_inputs[dataObj]
         except KeyError:
-            self.X_inputs[dataObj] = self._build_X_input(dataObj)
-            return self.X_inputs[dataObj]
+            self._X_inputs[dataObj] = self._build_X_input(dataObj)
+            return self._X_inputs[dataObj]
 
     def _build_X_input(self, dataObj):
         raise NotImplementedError
@@ -129,3 +132,18 @@ class BaseModel:
         plt.tight_layout()
         plt.ylabel('True label')
         plt.xlabel('Predicted label')
+
+    def save_plots(self):
+        def plot_save(dataObj_name, normalize):
+            plt.figure(figsize=(14, 14))
+            title = "Confusion matrix"
+            if normalize:
+                title += "normalized"
+            self.plot_confusion_matrix(
+                dataObj_name,
+                title=title,
+                normalize=normalize)
+            plt.savefig(f'logs/graph_figures/{self}_{title}.png')
+        for dataObj_name in ['train', 'test']:
+            for normalize in [True, False]:
+                plot_save(dataObj_name, normalize)

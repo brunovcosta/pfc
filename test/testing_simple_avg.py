@@ -15,19 +15,11 @@ model = SimpleAvg(
     min_number_per_label=10000,
     frac=1)
 
+model.summary()
+
 model.fit(
     save_metrics=True,
     save_checkpoints=False)
 
-plt.figure()
-model.plot_confusion_matrix('test', title='Confusion matrix, without normalization')
-plt.savefig('logs/graph_figures/simple_avg_without_normalization.png')
-
-plt.figure()
-model.plot_confusion_matrix('test', normalize=True, title='Normalized confusion matrix')
-plt.savefig('logs/graph_figures/simple_avg_with_normalization.png')
-
-#plt.show()
-
-model.summary()
+model.save_plots()
 model.inspect_mispredictions('test', 10)
