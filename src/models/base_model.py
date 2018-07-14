@@ -52,7 +52,7 @@ class BaseModel:
     def _build_X_input(self, dataObj):
         raise NotImplementedError
 
-    def fit(self, save_metrics=False):
+    def fit(self, save_metrics=False, save_checkpoints=False):
         raise NotImplementedError
 
     def one_hot_to_label(self, prediction):

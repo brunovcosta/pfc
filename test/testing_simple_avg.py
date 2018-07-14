@@ -14,7 +14,10 @@ model = SimpleAvg(
     dict_name="default.json",
     min_number_per_label=10000,
     frac=1)
-model.fit(save_metrics=True)
+
+model.fit(
+    save_metrics=False,
+    save_checkpoints=True)
 
 plt.figure()
 model.plot_confusion_matrix('test', title='Confusion matrix, without normalization')
