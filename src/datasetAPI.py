@@ -48,6 +48,14 @@ class RotaDosConcursos:
                     "text": str,
                     "label": str,
                     "splitted_text": lambda x: x.strip("[]").split(", ")})
+            def remove_apostrophe(row):
+                row.splitted_text = list(map(
+                    lambda x: x.strip("\'"),
+                    row.splitted_text))
+                return row
+            self.df.apply(
+                remove_apostrophe,
+                axis=1)
         else:
             texts = []
             splitted_texts = []

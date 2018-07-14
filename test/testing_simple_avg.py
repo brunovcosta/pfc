@@ -16,7 +16,7 @@ model = SimpleAvg(
     frac=1)
 
 model.fit(
-    save_metrics=False,
+    save_metrics=True,
     save_checkpoints=True)
 
 plt.figure()
