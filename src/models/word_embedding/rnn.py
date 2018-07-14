@@ -5,7 +5,7 @@ from .word_embedding_model import WordEmbeddingModelKeras
 
 class RNN(WordEmbeddingModelKeras):
 
-    def row_sentences_to_indices(self, row, answer_list):
+    def _row_sentences_to_indices(self, row, answer_list):
         """
         Converts an array of sentences (strings) into an array of indices corresponding
         to words in the sentences. The output shape should be such that it can
@@ -24,7 +24,7 @@ class RNN(WordEmbeddingModelKeras):
     def _build_X_input(self, dataObj):
         X_indices = []
         dataObj.df.apply(
-            self.row_sentences_to_indices, axis=1,
+            self._row_sentences_to_indices, axis=1,
             args=[X_indices])
         X_indices = np.array(X_indices)
         return X_indices
@@ -57,7 +57,7 @@ class RNN(WordEmbeddingModelKeras):
         raise NotImplementedError
 
 
-class RNN_2_Layers(RNN):
+class RNN2Layers(RNN):
 
     def _build_model(self):
         # Define sentence_indices as the input of the graph,
@@ -92,7 +92,7 @@ class RNN_2_Layers(RNN):
         return model
 
 
-class RNN_Simple(RNN):
+class RNNSimple(RNN):
 
     def _build_model(self):
         # Define sentence_indices as the input of the graph,
