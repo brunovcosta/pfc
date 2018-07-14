@@ -4,7 +4,7 @@ from .word_embedding_model import WordEmbeddingModelKeras
 
 class SimpleAvg(WordEmbeddingModelKeras):
 
-    def row_sentence_to_avg(self, row, answer_list):
+    def _row_sentence_to_avg(self, row, answer_list):
         """
         Extracts the word2Vec representation of each word and averages
         its value into a single vector encoding the meaning of the sentence.
@@ -24,7 +24,7 @@ class SimpleAvg(WordEmbeddingModelKeras):
 
     def _build_X_input(self, dataObj):
         X_avg = []
-        dataObj.df.apply(self.row_sentence_to_avg, axis=1, args=[X_avg])
+        dataObj.df.apply(self._row_sentence_to_avg, axis=1, args=[X_avg])
         X_avg = np.array(X_avg)
         return X_avg
 
