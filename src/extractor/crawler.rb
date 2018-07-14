@@ -18,25 +18,43 @@ for i in 0..1000
 end
 
 maxId = 2000000
-nullCounter = 0
-for fileNumber in 0..maxId
-	htmlFile = "#{fileNumber}.html"
-	puts "File " + htmlFile
-	Dir.chdir "#{fileNumber%1000}"
-	linkTest = linkPrefix + fileNumber.to_s
-	`curl -sLg '#{linkTest}' > #{htmlFile}`
-	extractedText = `xmllint --html --format --xpath '//div[@class="page-header"]/h1/text()' #{htmlFile} 2> /dev/null`
-	
-	if extractedText == "OOOPS!"
-		puts "File #{htmlFile} was null"
-		nullCounter = nullCounter + 1
-		puts "Current fraction of null pages is around #{100*nullCounter/(i+1)} %"
-	else
-		jsonFile = "#{fileNumber}.json"
-		`ruby ../../../src/extractor/extractor.rb "#{htmlFile}" "#{jsonFile}"`
+$nullCounter = 0
+numberOfThreads = ARGV[0].to_i || 4
+
+puts "Number of threads: #{numberOfThreads}"
+
+def crawler(maxId, numberOfThreads, threadNumber, linkPrefix)
+	puts "we are in the thread #{threadNumber}"
+	inferiorLimit = threadNumber*maxId/numberOfThreads
+	superiorLimit = inferiorLimit + maxId/numberOfThreads - 1 
+	threadNumber.step(maxId-1, numberOfThreads) do |fileNumber|
+		htmlFile = "#{fileNumber}.html"
+		puts "File " + htmlFile
+		linkTest = linkPrefix + fileNumber.to_s
+
+		`curl -sLg '#{linkTest}' > #{fileNumber%1000}/#{htmlFile}`
+		extractedText = `xmllint --html --format --xpath '//div[@class="page-header"]/h1/text()' #{fileNumber%1000}/#{htmlFile} 2> /dev/null`
+		
+		if extractedText == "OOOPS!"
+			puts "File #{htmlFile} was null"
+			$nullCounter = $nullCounter + 1
+			puts "Current fraction of null pages is around #{100*$nullCounter/(maxId)} %"
+		else
+			jsonFile = "#{fileNumber}.json"
+			`ruby ../../src/extractor/extractor.rb #{fileNumber%1000}/"#{htmlFile}" #{fileNumber%1000}/"#{jsonFile}"`
+		end
+		
+		`rm #{fileNumber%1000}/"#{htmlFile}"`
 	end
-	
-	`rm #{htmlFile}`
-	
-	Dir.chdir ".."
+end
+
+threads = []
+
+for threadNumber in 0..(numberOfThreads-1)
+	puts "starting thread #{threadNumber}"
+	threads.push(Thread.new(threadNumber){|threadNumber| crawler(maxId, numberOfThreads, threadNumber, linkPrefix)})
+end
+
+for thread in threads
+	thread.join
 end
