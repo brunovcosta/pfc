@@ -125,12 +125,13 @@ class RotaDosConcursos:
             autopct = '%1.1f%%'
         else:
             autopct = None
-        plt.figure(figsize=(14, 14))
+        plt.figure(figsize=(16, 14))
         self.target.value_counts().plot(
             kind='pie',
             autopct=autopct,
             legend=False,
-            title='labels distribution')
+            title='labels distribution',
+            fontsize=14)
         plt.savefig(f'logs/graph_figures/pie_graph.png')
 
     def _json_extraction(self, filename, texts, splitted_texts, labels, ids):

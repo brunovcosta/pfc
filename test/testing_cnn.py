@@ -8,7 +8,6 @@ sys.path.insert(0, os.path.abspath(module_root))
 from src.models.word_embedding import CNN
 
 
-print("loading model...")
 model = CNN(
     n_features_per_word=5,
     random_state=1,
@@ -18,7 +17,6 @@ model = CNN(
 
 model.summary()
 
-print("fitting data...")
 model.fit(
     save_metrics=True,
     save_checkpoints=False)

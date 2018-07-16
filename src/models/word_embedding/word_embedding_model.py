@@ -33,10 +33,12 @@ class WordEmbeddingModelKeras(BaseModel):
         self.get_model().summary()
 
     def fit(self, save_metrics=False, save_checkpoints=False):
+        print(f"fitting model {self}...")
+
         model = self.get_model()
 
         now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-        log_name = f'run-{now}'
+        log_name = f'run-{now}-{self}'
 
         model.compile(
             loss='categorical_crossentropy',

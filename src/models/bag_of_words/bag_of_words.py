@@ -29,6 +29,7 @@ class BagOfWords(BaseModel):
         return dataObj.text
 
     def fit(self, save_metrics=False, save_checkpoints=False):
+        print(f"fitting model {self}...")
         model = self.get_model()
         model.fit(
             self.get_X_input(self.trainObj),
