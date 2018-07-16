@@ -7,7 +7,7 @@ sys.path.insert(0, os.path.abspath(module_root))
 from src.models.bag_of_words.classifiers import SVM, NB
 
 
-for Classifier in [SVM, NB]:
+for Classifier in [NB, SVM]:
     model = Classifier(
         random_state=1,
         frac=1,

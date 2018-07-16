@@ -135,15 +135,17 @@ class BaseModel:
 
     def save_plots(self):
         def plot_save(dataObj_name, normalize):
-            plt.figure(figsize=(14, 14))
+            plt.figure(figsize=(15, 14))
             title = "Confusion matrix"
             if normalize:
-                title += "normalized"
+                title += " normalized"
+            title = f"{title} - {dataObj_name}"
+            print(f"saving plot {title}...")
             self.plot_confusion_matrix(
                 dataObj_name,
                 title=title,
                 normalize=normalize)
-            plt.savefig(f'logs/graph_figures/{self}_{title}.png')
+            plt.savefig(f'logs/graph_figures/{self} - {title}.png')
         for dataObj_name in ['train', 'test']:
             for normalize in [True, False]:
                 plot_save(dataObj_name, normalize)
