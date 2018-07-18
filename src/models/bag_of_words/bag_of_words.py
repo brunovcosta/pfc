@@ -1,7 +1,7 @@
-import numpy as np
 import nltk
 import sklearn
 from ..base_model import BaseModel
+from ...utils.metrics import MetricsBagOfWords
 
 
 class BagOfWords(BaseModel):
@@ -35,6 +35,15 @@ class BagOfWords(BaseModel):
             self.get_X_input(self.trainObj),
             self.trainObj.target)
         if save_metrics:
-            predicted = model.predict(self.get_X_input(self.testObj))
-            mean_result = np.mean(predicted == self.testObj.target)
-            print(f"Mean result {mean_result}")
+            metrics = MetricsBagOfWords(
+                model,
+                train_data=(
+                    self.get_X_input(self.trainObj),
+                    self.trainObj.target_one_hot,
+                ),
+                validation_data=(
+                    self.get_X_input(self.testObj),
+                    self.testObj.target_one_hot
+                )
+            )
+            metrics.save_results(str(self))

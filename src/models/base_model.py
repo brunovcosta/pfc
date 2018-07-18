@@ -9,14 +9,14 @@ class BaseModel:
     def __init__(self, random_state=1, frac=1,
                  dict_name=None,
                  min_number_per_label=0):
-        print("loading training dataset...")
+        print(f"loading training dataset to {self}...")
         self.trainObj = RotaDosConcursos(
             subset='train',
             frac=frac,
             random_state=random_state,
             dict_name=dict_name,
             min_number_per_label=min_number_per_label)
-        print("loading test dataset...")
+        print(f"loading test dataset to {self}...")
         self.testObj = RotaDosConcursos(
             subset='test',
             frac=frac,

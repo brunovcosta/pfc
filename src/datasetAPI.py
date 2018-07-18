@@ -40,6 +40,13 @@ class RotaDosConcursos:
         csv_path = 'dataset/rota_dos_concursos.csv'
 
         if os.path.isfile(csv_path):
+            def splitted_text_converter(splitted_text):
+                splitted_text = splitted_text.strip("[]").split(", ")
+                splitted_text = list(map(
+                    lambda x: x.strip("\'"),
+                    splitted_text))
+                return splitted_text
+
             self.df = pd.read_csv(
                 csv_path,
                 encoding='UTF-8',
@@ -47,15 +54,7 @@ class RotaDosConcursos:
                 converters={
                     "text": str,
                     "label": str,
-                    "splitted_text": lambda x: x.strip("[]").split(", ")})
-            def remove_apostrophe(row):
-                row.splitted_text = list(map(
-                    lambda x: x.strip("\'"),
-                    row.splitted_text))
-                return row
-            self.df.apply(
-                remove_apostrophe,
-                axis=1)
+                    "splitted_text": splitted_text_converter})
         else:
             texts = []
             splitted_texts = []

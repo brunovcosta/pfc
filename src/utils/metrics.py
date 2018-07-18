@@ -5,12 +5,11 @@ import sklearn
 
 class Metrics:
 
-    def __init__(self, model, train_data, validation_data):
+    def __init__(self):
         self.predict_probability = {}
         self.predict_label = {}
         self.target_one_hot = {}
         self.target_label = {}
-        raise NotImplementedError
 
     def accuracy_score(self, subset):
         return sklearn.metrics.accuracy_score(
@@ -41,31 +40,13 @@ class Metrics:
             self.predict_probability[subset],
             average='weighted')
 
+    def _build_parameters(self, subset, data):
+        self.predict_label[subset] = np.argmax(self.predict_probability[subset], axis=1)
+        self.target_one_hot[subset] = np.asarray(data[1])
+        self.target_label[subset] = np.argmax(self.target_one_hot[subset], axis=1)
 
-class MetricsBagOfWords(Metrics): #TODO
-
-    def __init__(self, model, train_data, validation_data):
-        self.predict_probability = {}
-        self.predict_label = {}
-        self.target_one_hot = {}
-        self.target_label = {}
-
-        for subset, data in [('val', validation_data), ('train', train_data)]:
-            self.predict_probability[subset] = np.asarray(model.predict_proba(data[0]))
-            self.predict_label[subset] = np.argmax(self.predict_probability[subset], axis=1)
-            self.target_one_hot[subset] = np.asarray(data[1])
-            self.target_label[subset] = np.argmax(self.target_one_hot[subset], axis=1)
-
-    def save_results(self):
-        pass
-
-        def calc_save(metric_func):
-            pass
-            for subset in ['val', 'train']:
-                plot_name = metric_func.__name__
-                metric_value = metric_func(subset)
-
-        metric_functions = [
+    def get_metric_functions(self):
+        return [
             self.accuracy_score,
             self.precision_score,
             self.recall_score,
@@ -73,24 +54,42 @@ class MetricsBagOfWords(Metrics): #TODO
             self.roc_auc_score
         ]
 
-        for metric_func in metric_functions:
+
+class MetricsBagOfWords(Metrics):
+
+    def __init__(self, model, train_data, validation_data):
+        super(MetricsBagOfWords, self).__init__()
+
+        for subset, data in [('val', validation_data), ('train', train_data)]:
+            self.predict_probability[subset] = np.asarray(model.predict_proba(data[0]))
+            self._build_parameters(subset, data)
+
+    def save_results(self, model_name):
+        log_file = open(f'logs/txt_logs/{model_name}_metrics.txt', 'w')
+
+        def calc_save(metric_func):
+            for subset in ['val', 'train']:
+                plot_name = metric_func.__name__
+                metric_value = metric_func(subset)
+                out_txt = f'{plot_name} - {subset} : {metric_value}\n'
+                print(out_txt)
+                log_file.write(out_txt)
+
+        for metric_func in self.get_metric_functions():
             calc_save(metric_func)
+
+        log_file.close()
 
 
 class MetricsTensorboard(Metrics):
 
     def __init__(self, model, train_data, validation_data):
-        self.predict_probability = {}
-        self.predict_label = {}
-        self.target_one_hot = {}
-        self.target_label = {}
+        super(MetricsTensorboard, self).__init__()
         self.loss = {}
 
         for subset, data in [('val', validation_data), ('train', train_data)]:
             self.predict_probability[subset] = np.asarray(model.predict(data[0]))
-            self.predict_label[subset] = np.argmax(self.predict_probability[subset], axis=1)
-            self.target_one_hot[subset] = np.asarray(data[1])
-            self.target_label[subset] = np.argmax(self.target_one_hot[subset], axis=1)
+            self._build_parameters(subset, data)
             self.loss[subset] = model.evaluate(data[0], data[1])
 
     def write_metrics_to_tensorboard(self, writer, epoch):
@@ -111,15 +110,7 @@ class MetricsTensorboard(Metrics):
                 metric_value = metric_func(subset)
                 write(metric_value, plot_name, subset)
 
-        metric_functions = [
-            self.accuracy_score,
-            self.precision_score,
-            self.recall_score,
-            self.f1_score,
-            self.roc_auc_score
-        ]
-
-        for metric_func in metric_functions:
+        for metric_func in self.get_metric_functions():
             calc_write(metric_func)
 
         for subset in ['val', 'train']:
