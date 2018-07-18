@@ -1,6 +1,5 @@
 import os
 import sys
-import matplotlib.pyplot as plt
 
 module_root = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(module_root))
@@ -19,7 +18,9 @@ model.summary()
 
 model.fit(
     save_metrics=True,
-    save_checkpoints=False)
+    save_checkpoints=True)
+
+# model.load_model("run-20180718142233-SimpleAvg_50")
 
 model.save_plots()
 model.inspect_mispredictions('test', 10)
