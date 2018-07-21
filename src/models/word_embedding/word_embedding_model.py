@@ -12,27 +12,34 @@ class WordEmbeddingModelKeras(BaseModel):
                  dict_name=None,
                  min_number_per_label=0):
 
+        self.n_features_per_word = n_features_per_word
+
         super(WordEmbeddingModelKeras, self).__init__(
             random_state,
             frac,
             dict_name,
             min_number_per_label)
 
-        self.n_features_per_word = n_features_per_word
+        print("loading gensim model...")
         wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(
             self.n_features_per_word)
         self.wordEmbedModel = KeyedVectors.load_word2vec_format(
             wordEmbedPath,
             unicode_errors="ignore")
 
+    def __repr__(self):
+        return f"{type(self).__name__}_{self.n_features_per_word}"
+
     def summary(self):
         self.get_model().summary()
 
     def fit(self, save_metrics=False, save_checkpoints=False):
+        print(f"fitting model {self}...")
+
         model = self.get_model()
 
         now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-        log_name = f'run-{now}'
+        log_name = f'run-{now}-{self}'
 
         model.compile(
             loss='categorical_crossentropy',
@@ -44,10 +51,10 @@ class WordEmbeddingModelKeras(BaseModel):
             callbacks.append(
                 tf.keras.callbacks.ModelCheckpoint(
                     f'./logs/keras_checkpoints/{log_name}.hdf5',
-                    monitor='val_acc',
+                    monitor='val_loss',
                     verbose=1,
                     save_best_only=True,
-                    mode='max'))
+                    mode='min'))
 
         if save_metrics:
             callbacks.append(TrainValTensorBoard(
@@ -70,6 +77,8 @@ class WordEmbeddingModelKeras(BaseModel):
             callbacks=callbacks)
 
     def load_model(self, checkpoint_file):
+        print(f"loading weights to model {self}...")
+
         model = self.get_model()
 
         model.load_weights(f'./logs/keras_checkpoints/{checkpoint_file}.hdf5')

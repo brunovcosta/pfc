@@ -9,12 +9,14 @@ class BaseModel:
     def __init__(self, random_state=1, frac=1,
                  dict_name=None,
                  min_number_per_label=0):
+        print(f"loading training dataset to {self}...")
         self.trainObj = RotaDosConcursos(
             subset='train',
             frac=frac,
             random_state=random_state,
             dict_name=dict_name,
             min_number_per_label=min_number_per_label)
+        print(f"loading test dataset to {self}...")
         self.testObj = RotaDosConcursos(
             subset='test',
             frac=frac,
@@ -25,16 +27,19 @@ class BaseModel:
         self.max_text_len = self.trainObj.max_text_length
         self.target_names = self.trainObj.target_names
         self.n_categories = len(self.target_names)
-        self.model = None
-        self.X_inputs = {}
+        self._model = None
+        self._X_inputs = {}
+
+    def __repr__(self):
+        return type(self).__name__
 
     def get_model(self):
         """
         Returns the model.
         """
-        if self.model is None:
-            self.model = self._build_model()
-        return self.model
+        if self._model is None:
+            self._model = self._build_model()
+        return self._model
 
     def _build_model(self):
         """
@@ -44,10 +49,10 @@ class BaseModel:
 
     def get_X_input(self, dataObj):
         try:
-            return self.X_inputs[dataObj]
+            return self._X_inputs[dataObj]
         except KeyError:
-            self.X_inputs[dataObj] = self._build_X_input(dataObj)
-            return self.X_inputs[dataObj]
+            self._X_inputs[dataObj] = self._build_X_input(dataObj)
+            return self._X_inputs[dataObj]
 
     def _build_X_input(self, dataObj):
         raise NotImplementedError
@@ -127,3 +132,20 @@ class BaseModel:
         plt.tight_layout()
         plt.ylabel('True label')
         plt.xlabel('Predicted label')
+
+    def save_plots(self):
+        def plot_save(dataObj_name, normalize):
+            plt.figure(figsize=(15, 14))
+            title = "Confusion matrix"
+            if normalize:
+                title += " normalized"
+            title = f"{title} - {dataObj_name}"
+            print(f"saving plot {title}...")
+            self.plot_confusion_matrix(
+                dataObj_name,
+                title=title,
+                normalize=normalize)
+            plt.savefig(f'logs/graph_figures/{self} - {title}.png')
+        for dataObj_name in ['train', 'test']:
+            for normalize in [True, False]:
+                plot_save(dataObj_name, normalize)

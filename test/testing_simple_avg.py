@@ -1,6 +1,5 @@
 import os
 import sys
-import matplotlib.pyplot as plt
 
 module_root = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(module_root))
@@ -15,17 +14,13 @@ model = SimpleAvg(
     min_number_per_label=10000,
     frac=1)
 
+model.summary()
+
 model.fit(
     save_metrics=True,
     save_checkpoints=True)
 
-plt.figure()
-model.plot_confusion_matrix('test', title='Confusion matrix, without normalization')
+# model.load_model("run-20180718142233-SimpleAvg_50")
 
-plt.figure()
-model.plot_confusion_matrix('test', normalize=True, title='Normalized confusion matrix')
-
-plt.show()
-
-model.summary()
+model.save_plots()
 model.inspect_mispredictions('test', 10)
