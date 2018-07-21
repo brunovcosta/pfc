@@ -19,3 +19,5 @@ __pycache__/
 
 #Extra files
 not_to_commit/*
+
+logs_*

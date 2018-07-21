@@ -1,5 +1,5 @@
 import tensorflow as tf
-from .metrics import Metrics
+from .metrics import MetricsTensorboard
 
 
 class TrainValTensorBoard(tf.keras.callbacks.TensorBoard):
@@ -20,7 +20,7 @@ class TrainValTensorBoard(tf.keras.callbacks.TensorBoard):
         super(TrainValTensorBoard, self).set_model(model)
 
     def on_epoch_end(self, epoch, logs=None):
-        metrics = Metrics(
+        metrics = MetricsTensorboard(
             self.model,
             self.training_data,
             self.validation_data)

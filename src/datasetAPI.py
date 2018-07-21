@@ -40,6 +40,13 @@ class RotaDosConcursos:
         csv_path = 'dataset/rota_dos_concursos.csv'
 
         if os.path.isfile(csv_path):
+            def splitted_text_converter(splitted_text):
+                splitted_text = splitted_text.strip("[]").split(", ")
+                splitted_text = list(map(
+                    lambda x: x.strip("\'"),
+                    splitted_text))
+                return splitted_text
+
             self.df = pd.read_csv(
                 csv_path,
                 encoding='UTF-8',
@@ -47,15 +54,7 @@ class RotaDosConcursos:
                 converters={
                     "text": str,
                     "label": str,
-                    "splitted_text": lambda x: x.strip("[]").split(", ")})
-            def remove_apostrophe(row):
-                row.splitted_text = list(map(
-                    lambda x: x.strip("\'"),
-                    row.splitted_text))
-                return row
-            self.df.apply(
-                remove_apostrophe,
-                axis=1)
+                    "splitted_text": splitted_text_converter})
         else:
             texts = []
             splitted_texts = []
@@ -118,19 +117,21 @@ class RotaDosConcursos:
 
     @property
     def max_text_length(self):
-        return self.max_text_len
+        return self._max_text_len
 
-    def show_target_distribution(self):
+    def save_pie_graph(self):
         if len(self.target_names) <= 10:
             autopct = '%1.1f%%'
         else:
             autopct = None
+        plt.figure(figsize=(16, 14))
         self.target.value_counts().plot(
             kind='pie',
             autopct=autopct,
             legend=False,
-            title='labels distribution')
-        plt.show()
+            title='labels distribution',
+            fontsize=14)
+        plt.savefig(f'logs/graph_figures/pie_graph.png')
 
     def _json_extraction(self, filename, texts, splitted_texts, labels, ids):
         data = json.load(open(filename), encoding='UTF-8')
@@ -211,7 +212,7 @@ class RotaDosConcursos:
 
     def _save_max_text_length(self):
         splitted_text_len = list(map(len, self.df.splitted_text))
-        self.max_text_len = max(splitted_text_len)
+        self._max_text_len = max(splitted_text_len)
 
     def _save_subset(self, subset, random_state):
         if subset == 'all':
