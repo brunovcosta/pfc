@@ -2,5 +2,5 @@ This work aims to analyze and implement established text classification models, 
 
 
 ```
-curl https://raw.githubusercontent.com/brunovcosta/pfc/master/setup | bash
+curl https://raw.githubusercontent.com/brunovcosta/pfc/master/setup.sh | bash
 ```
