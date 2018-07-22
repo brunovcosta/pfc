@@ -1,5 +1,4 @@
 import tensorflow as tf
-import numpy as np
 from .word_embedding_model import WordEmbeddingModelKeras
 
 
@@ -11,22 +10,28 @@ class RNN(WordEmbeddingModelKeras):
         to words in the sentences. The output shape should be such that it can
         be given to `Embedding()`
         """
-        X_indices = np.zeros((self.max_text_len, ))
-
-        for index, word in enumerate(row.splitted_text):
+        X_indices = []
+        for _, word in enumerate(row.splitted_text):
             try:
-                X_indices[index] = self.wordEmbedModel.vocab[word].index
+                word_index = self.wordEmbedModel.vocab[word].index
             except KeyError:
-                X_indices[index] = self.wordEmbedModel.vocab['<unk>'].index
+                word_index = self.wordEmbedModel.vocab['<unk>'].index
+            X_indices.append(word_index)
 
         answer_list.append(X_indices)
 
     def _build_X_input(self, dataObj):
         X_indices = []
+
         dataObj.df.apply(
             self._row_sentences_to_indices, axis=1,
             args=[X_indices])
-        X_indices = np.array(X_indices)
+
+        X_indices = tf.keras.preprocessing.sequence.pad_sequences(
+            X_indices,
+            maxlen=self.padded_length,
+            padding='pre',
+            truncating='post')
         return X_indices
 
     def pretrained_embedding_layer(self):
@@ -39,8 +44,9 @@ class RNN(WordEmbeddingModelKeras):
         vocab_len = len(self.wordEmbedModel.vocab)
 
         embedding_layer = tf.keras.layers.Embedding(
-            vocab_len,
-            self.n_features_per_word)
+            input_dim=vocab_len,
+            output_dim=self.n_features_per_word,
+            input_length=self.padded_length)
         embedding_layer.trainable = False
         embedding_layer.build((None,))
         embedding_layer.set_weights([self.wordEmbedModel.vectors])
@@ -62,7 +68,7 @@ class RNN2Layers(RNN):
     def _build_model(self):
         # Define sentence_indices as the input of the graph,
         # it should be of dtype 'int32' (as it contains indices).
-        sentence_indices = tf.keras.layers.Input(shape=(self.max_text_len,), dtype='int32')
+        sentence_indices = tf.keras.layers.Input(shape=(self.padded_length,), dtype='int32')
 
         # Create the embedding layer pretrained with GloVe Vectors
         embedding_layer = self.pretrained_embedding_layer()
@@ -97,7 +103,7 @@ class RNNSimple(RNN):
     def _build_model(self):
         # Define sentence_indices as the input of the graph,
         # it should be of dtype 'int32' (as it contains indices).
-        sentence_indices = tf.keras.layers.Input(shape=(self.max_text_len,), dtype='int32')
+        sentence_indices = tf.keras.layers.Input(shape=(self.padded_length,), dtype='int32')
 
         # Create the embedding layer pretrained with GloVe Vectors
         embedding_layer = self.pretrained_embedding_layer()
