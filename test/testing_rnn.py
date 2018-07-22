@@ -12,7 +12,7 @@ model = RNNSimple(
     random_state=1,
     dict_name="default.json",
     min_number_per_label=10000,
-    frac=1)
+    frac=0.5)
 
 model.summary()
 

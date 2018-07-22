@@ -27,6 +27,10 @@ class WordEmbeddingModelKeras(BaseModel):
             wordEmbedPath,
             unicode_errors="ignore")
 
+        self.padded_length = min(
+            int(self.trainObj.avg_text_length * 1.2),
+            self.max_text_len)
+
     def __repr__(self):
         return f"{type(self).__name__}_{self.n_features_per_word}"
 
