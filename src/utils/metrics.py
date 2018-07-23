@@ -40,19 +40,28 @@ class Metrics:
             self.predict_probability[subset],
             average='weighted')
 
-    def _build_parameters(self, subset, data):
-        self.predict_label[subset] = np.argmax(self.predict_probability[subset], axis=1)
+    def _build_parameters(self, subset, data, model=None):
+        if self.predict_probability:
+            self.predict_label[subset] = np.argmax(self.predict_probability[subset], axis=1)
+        else:
+            self.predict_label[subset] = model.predict(data[0])
         self.target_one_hot[subset] = np.asarray(data[1])
         self.target_label[subset] = np.argmax(self.target_one_hot[subset], axis=1)
 
     def get_metric_functions(self):
-        return [
+        prediction_metrics = [
             self.accuracy_score,
             self.precision_score,
             self.recall_score,
             self.f1_score,
+        ]
+        propability_prediction_metrics = [
             self.roc_auc_score
         ]
+        metric_functions = prediction_metrics
+        if self.predict_probability:
+            metric_functions += propability_prediction_metrics
+        return metric_functions
 
 
 class MetricsBagOfWords(Metrics):
@@ -61,8 +70,11 @@ class MetricsBagOfWords(Metrics):
         super(MetricsBagOfWords, self).__init__()
 
         for subset, data in [('val', validation_data), ('train', train_data)]:
-            self.predict_probability[subset] = np.asarray(model.predict_proba(data[0]))
-            self._build_parameters(subset, data)
+            try:
+                self.predict_probability[subset] = np.asarray(model.predict_proba(data[0]))
+            except AttributeError: # probability estimates are not available for loss='hinge'
+                pass
+            self._build_parameters(subset, data, model)
 
     def save_results(self, model_name):
         log_file = open(f'logs/txt_logs/{model_name}_metrics.txt', 'w')
@@ -104,14 +116,11 @@ class MetricsTensorboard(Metrics):
         for subset in ['val', 'train']:
             write(self.loss[subset], 'loss_end_epoch', subset)
 
-        def calc_write(metric_func):
+        for metric_func in self.get_metric_functions():
             for subset in ['val', 'train']:
                 plot_name = metric_func.__name__
                 metric_value = metric_func(subset)
                 write(metric_value, plot_name, subset)
-
-        for metric_func in self.get_metric_functions():
-            calc_write(metric_func)
 
         for subset in ['val', 'train']:
             writer[subset].flush()
