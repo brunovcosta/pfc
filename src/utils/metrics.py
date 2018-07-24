@@ -44,7 +44,8 @@ class Metrics:
         if self.predict_probability:
             self.predict_label[subset] = np.argmax(self.predict_probability[subset], axis=1)
         else:
-            self.predict_label[subset] = model.predict(data[0])
+            self.predict_label[subset] = model.decision_function(data[0])
+            self.predict_label[subset] = np.argmax(self.predict_label[subset], axis=1)
         self.target_one_hot[subset] = np.asarray(data[1])
         self.target_label[subset] = np.argmax(self.target_one_hot[subset], axis=1)
 

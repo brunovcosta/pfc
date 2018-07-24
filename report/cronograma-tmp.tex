@@ -1,55 +1,9 @@
 \chapter{Cronograma}
-Conforme a seção \ref{sec:metodology}, o trabalho será dividido em seis etapas. Essas etapas serão agrupadas em três entregáveis (VE, VC e VF) com duas etapas cada. A figura \ref{fig:gantt} ilustra o cronograma.
-
-Os métodos citados na fase de implementação e análise são definidos no capítulo \ref{cap:methods}.
+Conforme descrito na seção \ref{sec:metodology}, o trabalho foi dividido em seis etapas. Dessas etapas, apenas os modelos cujas implementações estão evidenciadas no diagrama de classes da figura \ref{fig:ClassDiagramCronograma} estão em fase de análise, os demais já concluíram essa fase. Desse modo, como entregáveis para a VF estão previstas as etapas de desenvolvimento da subseção \ref{subsec:desenvolvimento} e uma avaliação final sobre os resultados conforme a subseção \ref{subsec:avaliacao}.
 
 \begin{figure}[!ht]
 	\centering
-	\begin{ganttchart}[
-      vgrid,hgrid,x unit=0.9cm
-    ]{1}{12}
-       \gantttitle[]{2017}{12} \\
-       \gantttitle{Jan}{1}
-       \gantttitle{Fev}{1}
-       \gantttitle{Mar}{1}
-       \gantttitle{Abr}{1}
-       \gantttitle{Mai}{1}
-       \gantttitle{Jun}{1}
-       \gantttitle{Jul}{1}
-       \gantttitle{Ago}{1}
-       \gantttitle{Set}{1}
-       \gantttitle{Out}{1}
-       \gantttitle{Nov}{1}
-       \gantttitle{Dez}{1}\\
-
-      \ganttgroup{Pesquisa e configuração}{1}{4} \\
-      \ganttbar{Crawler}{1}{2} \\
-      \ganttbar{Tratamento}{3}{8} \\
-
-      \ganttmilestone{VE}{5}  \ganttnewline
-
-      \ganttgroup{Implementação e análise}{5}{8} \\
-      \ganttbar{Bag of Words}{5}{6} \\
-      \ganttbar{Rede Neural}{5}{6} \\
-      \ganttbar{Rede Neural Recorrente}{6}{8} \\
-      \ganttbar{Rede Neural Convolucional}{6}{8} \\
-
-      \ganttmilestone{VC}{8}  \ganttnewline
-
-      \ganttgroup{Conclusão}{9}{10} \\
-      \ganttbar{Desenvolvimento}{9}{9}\\
-      \ganttbar{Avaliação}{9}{12}\\
-
-      \ganttmilestone{VF}{10} \ganttnewline
-
-      % \ganttlink{elem0}{elem3}
-      % \ganttlink{elem3}{elem4}
- 
-      % \ganttlink{elem4}{elem9}
-      % \ganttlink{elem9}{elem10}
- 
-      % \ganttlink{elem10}{elem13}
-    \end{ganttchart} 
-    \caption{Diagrama de Gantt}
-    \label{fig:gantt}
+	\includegraphics[width=1.16\textwidth]{figures/ClassDiagram-Cronograma.png}
+	\caption{Classes em análise para a VF em destaque}
+	\label{fig:ClassDiagramCronograma}
 \end{figure}

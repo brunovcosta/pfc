@@ -47,14 +47,14 @@ Este trabalho tem como objetivo a implementação, teste e comparação das prin
 
 Para fim de simplificação de escopo, serão consideradas apenas questões objetivas, que contenham alternativas, e retiradas de uma mesma fonte conforme explicitado no capítulo 3.
 
-Adicionalmente, serão consideradas apenas técnicas de classificação por assunto limitada a nível de área do conhecimento (ex: computação/cinema/medicina/direito), sem levar em consideração as diferenças entre matérias (ex: linguagens formais/inteligência artificial/mineração de dados).
+Além disso, o escopo será limitado á classificação por assuntos. Dentro de um assunto a granularidade será limitada ao nível de área do conhecimento (ex: computação/cinema/medicina/direito), sem levar em consideração as diferenças entre matérias (ex: linguagens formais/inteligência artificial/mineração de dados).
 
 \section{Abordagem}
 A abordagem escolhida por este projeto foi a de obter uma base de dados de questões e tratá-la da maneira mais conveniente de modo a se adequar aos seus objetivos. Tal obtenção e tratamento são abordadas no capítulo 3.
 
 Com a base de dados, a próxima etapa é a de utilizar as principais técnicas de classificação de textos genéricos, descritas no capítulo 4, na classificação do assunto de suas questões. Nessa etapa, cada um dos métodos será otimizado para essa base de dados, validando suas arquiteturas e seus hiperparâmetros. Com esses resultados, é possível comparar a performance desses métodos.
 
-Com base nessa comparação, avalia-se a viabilidade de implementar um modelo unificado dos modelos que utilizará os resultados anteriores e determinará qual é a melhor previsão de assunto da questão (Ensemble learning). O maior detalhamento desses modelos está no capítulo 5.
+Com base nessa comparação, avalia-se a viabilidade de implementar um modelo unificado dos modelos que utilizará os resultados anteriores e determinará qual é a melhor previsão de assunto da questão (\textit{Ensemble learning}).
 
 \section{Metodologia}
 \label{sec:metodology}
@@ -78,14 +78,14 @@ O trabalho será dividido em seis etapas conforme a figura \ref{fig:fluxogram}.
     \draw [->] (n3) -- (n4);
     \draw [->] (n4) -- (n5);
     \draw [->] (n5) -- (n6);
-    %\draw [->] (n4.east) -| ++(1,0) |- (n3.east);
-    %\draw [->] (n4.west) -| ++(-1,0) |- (n2.west);
+    
   \end{tikzpicture}
   \caption{Fluxograma de trabalho}
   \label{fig:fluxogram}
 \end{figure}
-\subsection{Crawler}
-A primeira etapa do trabalho corresponde à obtenção de dados para serem utilizados nos algoritmos de aprendizado de máquina. Isso é feito a partir de Web scraping de questões de concursos públicos já rotuladas com os seus respectivos assuntos.
+
+\subsection{\textit{Crawler}}
+A primeira etapa do trabalho corresponde à obtenção de dados para serem utilizados nos algoritmos de aprendizado de máquina. Isso é feito a partir de \textit{Web scraping} de questões de concursos públicos já rotuladas com os seus respectivos assuntos.
 \subsection{Tratamento}
 Em seguida, há uma fase de processamento de dados que remove inconsistências e prepara uma interface ideal para os algoritmos que serão aplicados posteriormente.
 \subsection{Implementação}
@@ -93,22 +93,23 @@ A terceira fase consiste na implementação de alguns modelos consagrados de cla
 \subsection{Análise}
 A seguir, será feita uma análise de desempenho para cada algoritmo que poderá resultar na variação de seus hiperparâmetros implementados e tratamento do conjunto de dados.
 \subsection{Desenvolvimento}
-Da análise obtida na etapa anterior será desenvolvida uma técnica híbrida especializada em questões.
+\label{subsec:desenvolvimento}
+Da análise obtida na etapa anterior, seleciona-se a técnica de melhor performance como central do projeto ou desenvolve-se uma técnica híbrida baseada em \textit{ensemble learning} dos modelos anteriores.
 \subsection{Avaliação}
-Por fim, os resultados obtidos serão avaliados e contrastados com os modelos reais para aferição de alcance dos objetivos.
+\label{subsec:avaliacao}
+Por fim, os resultados obtidos serão avaliados e contrastados com os outros modelos de classificação de texto para a aferição de alcance dos objetivos.
 
 \section{Organização}
-%do documento
 Sobre os capítulos subsequentes a seguinte distribuição de conteúdo:
 \begin{itemize}
-\item Capítulo 2 - Trabalhos relacionados:
+\item Capítulo \ref{trabalhosRelacionados} - Trabalhos relacionados:
 exposição de trabalhos relacionados ao tema de classificação de texto;
-\item Capítulo 3 - Obtenção da base de dados:
+\item Capítulo \ref{chapter:ObtencaoBases} - Obtenção da base de dados:
 metodologia utilizada para obtenção e processamento da base de dados utilizada como referência no projeto;
-\item Capítulo 4 - Fundamentação Teórica:
+\item Capítulo \ref{cap:methods} - Fundamentação Teórica:
 descrição dos principais conceitos utilizados em cada um dos algoritmos de classificação que serão implementados;
-\item Capítulo 5 - Algoritmos de classificação:
+\item Capítulo \ref{chapter:implementacaoResultados} - Implementação e Resultados:
 descrição, metodologia de implementação e resultados de cada um dos algoritmos implementados;
-\item Capítulo 6 - Comparação e conclusão:
-comparação dos resultados dos entre diferentes modelos e algoritmos implementados no capítulo anterior.
+\item Capítulo \ref{chapter:conclusao} - Comparação e conclusão:
+comparação dos resultados entre diferentes modelos e algoritmos implementados no capítulo anterior.
 \end{itemize}

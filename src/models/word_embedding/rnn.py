@@ -6,12 +6,11 @@ class RNN(WordEmbeddingModelKeras):
 
     def _row_sentences_to_indices(self, row, answer_list):
         """
-        Converts an array of sentences (strings) into an array of indices corresponding
-        to words in the sentences. The output shape should be such that it can
-        be given to `Embedding()`
+        Converts a list of strings into a list of indices corresponding
+        to words in the word embedding model.
         """
         X_indices = []
-        for _, word in enumerate(row.splitted_text):
+        for word in row.splitted_text:
             try:
                 word_index = self.wordEmbedModel.vocab[word].index
             except KeyError:
@@ -66,31 +65,19 @@ class RNN(WordEmbeddingModelKeras):
 class RNN2Layers(RNN):
 
     def _build_model(self):
-        # Define sentence_indices as the input of the graph,
         # it should be of dtype 'int32' (as it contains indices).
         sentence_indices = tf.keras.layers.Input(shape=(self.padded_length,), dtype='int32')
-
-        # Create the embedding layer pretrained with GloVe Vectors
         embedding_layer = self.pretrained_embedding_layer()
-
-        # Propagate sentence_indices through your embedding layer, you get back the embeddings
         embeddings = embedding_layer(sentence_indices)
 
-        # Propagate the embeddings through an LSTM layer with 128-dimensional hidden state
-        # The returned output should be a batch of sequences.
         X = tf.keras.layers.LSTM(128, return_sequences=True)(embeddings)
-        # Add dropout with a probability of 0.5
         X = tf.keras.layers.Dropout(0.5)(X)
-        # Propagate X trough another LSTM layer with 128-dimensional hidden state
-        # The returned output should be a single hidden state, not a batch of sequences.
         X = tf.keras.layers.LSTM(128, return_sequences=False)(X)
-        # Add dropout with a probability of 0.5
         X = tf.keras.layers.Dropout(0.5)(X)
+
         X = tf.keras.layers.Dense(self.n_categories)(X)
-        # Add a softmax activation
         X = tf.keras.layers.Activation('softmax')(X)
 
-        # Create Model instance which converts sentence_indices into X.
         model = tf.keras.models.Model(
             inputs=sentence_indices,
             outputs=X)
@@ -101,21 +88,16 @@ class RNN2Layers(RNN):
 class RNNSimple(RNN):
 
     def _build_model(self):
-        # Define sentence_indices as the input of the graph,
         # it should be of dtype 'int32' (as it contains indices).
         sentence_indices = tf.keras.layers.Input(shape=(self.padded_length,), dtype='int32')
-
-        # Create the embedding layer pretrained with GloVe Vectors
         embedding_layer = self.pretrained_embedding_layer()
 
-        # Propagate sentence_indices through your embedding layer, you get back the embeddings
         embeddings = embedding_layer(sentence_indices)
         X = tf.keras.layers.LSTM(128, return_sequences=False)(embeddings)
+
         X = tf.keras.layers.Dense(self.n_categories)(X)
-        # Add a softmax activation
         X = tf.keras.layers.Activation('softmax')(X)
 
-        # Create Model instance which converts sentence_indices into X.
         model = tf.keras.models.Model(
             inputs=sentence_indices,
             outputs=X)
