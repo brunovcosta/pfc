@@ -44,7 +44,7 @@ class CNN(WordEmbeddingModelKeras):
             truncating='post')
         return X_indices
 
-    def pretrained_embedding_layer(self):
+    def pretrained_embedding_layer(self, input_shape):
         """
         Creates a Keras Embedding() layer and loads in pre-trained GloVe.
 
@@ -54,6 +54,7 @@ class CNN(WordEmbeddingModelKeras):
         vocab_len = len(self.wordEmbedModel.vocab)
 
         embedding_layer = tf.keras.layers.Embedding(
+            input_shape=input_shape,
             input_dim=vocab_len,
             output_dim=self.n_features_per_word,
             input_length=self.padded_length)
@@ -65,11 +66,11 @@ class CNN(WordEmbeddingModelKeras):
 
     def _build_model(self):
         return keras.models.Sequential([
-            tf.keras.layers.Input(shape=(self.padded_length,), dtype='int32'),
-            self.pretrained_embedding_layer(),
+            
+            self.pretrained_embedding_layer(input_shape=(self.padded_length,)),
             keras.layers.Conv2D(10, (3,self.n_features_per_word), activation='relu'),
             keras.layers.MaxPooling2D(),
-            keras.layers.Conv2D(10, (3,self.n_features_per_word), activation='relu'),
+            keras.layers.Conv2D(10, (2,self.n_features_per_word), activation='relu'),
             keras.layers.MaxPooling2D(),
             keras.layers.Flatten(),
             keras.layers.Dense(self.n_categories, activation='softmax')
