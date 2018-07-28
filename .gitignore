@@ -21,3 +21,6 @@ __pycache__/
 not_to_commit/*
 
 logs_*
+
+# Private keys
+*.pem
