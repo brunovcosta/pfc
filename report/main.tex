@@ -42,6 +42,10 @@
 \usepackage{pgffor}
 \usepackage{pdftexcmds}
 \usepackage{tikz}
+\usepackage{multicol}
+\usepackage{bera}% optional: just to have a nice mono-spaced font
+\usepackage{listings}
+\usepackage{xcolor}
 \usetikzlibrary{calc,trees,positioning,arrows,chains,shapes.geometric,  decorations.pathreplacing,decorations.pathmorphing,shapes,  matrix,shapes.symbols}
 
 % -----
@@ -60,7 +64,6 @@
 	headheight=0mm,
 	headsep=0mm,
 }
-
 % -----
 % DECLARAÇÕES AUXILIARES PARA REFERÊNCIAS
 %
@@ -112,7 +115,7 @@
 \include{cap-04}
 \include{cap-05}
 \include{cap-06}
-%\include{cronograma-tmp}
+\include{cronograma-tmp}
 
 % -----
 % PARTE DE REFERÊCIAS BIBLIOGRÁFICAS DE PFC
@@ -129,9 +132,9 @@
 %  Se o documento de PFC não tiver apêndices REMOVER AS LINHAS ABAIXO
 %  Adicionar os arquivos .tex de apêndice ao documento com comando \include{•}
 % -----
-% \inappendix
-% \include{apendice}
-% \outappendix
+\inappendix
+\include{apendice}
+\outappendix
 % 
 % % -----
 % % PARTE DE ANEXO DE PFC

@@ -8,7 +8,7 @@ from src.models.word_embedding import CNN
 
 
 model = CNN(
-    n_features_per_word=5,
+    n_features_per_word=50,
     random_state=1,
     dict_name="default.json",
     min_number_per_label=10000,

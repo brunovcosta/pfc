@@ -4,6 +4,7 @@ import glob
 import os
 import nltk
 import pandas as pd
+import numpy as np
 import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
 
@@ -92,7 +93,7 @@ class RotaDosConcursos:
         self._drop_labels_with_insufficient_data(min_number_per_label)
         self.df = self.df.sample(frac=frac, random_state=random_state)
         self._one_hot = pd.get_dummies(self.df['label'])
-        self._save_max_text_length()
+        self._save_text_properties()
         self.df, self._one_hot = self._save_subset(subset, random_state)
 
     @property
@@ -118,6 +119,10 @@ class RotaDosConcursos:
     @property
     def max_text_length(self):
         return self._max_text_len
+
+    @property
+    def avg_text_length(self):
+        return self._avg_text_len
 
     def save_pie_graph(self):
         if len(self.target_names) <= 10:
@@ -210,9 +215,10 @@ class RotaDosConcursos:
         indexes_to_drop = self.target[boolean_drop].index
         self.df.drop(indexes_to_drop, inplace=True)
 
-    def _save_max_text_length(self):
+    def _save_text_properties(self):
         splitted_text_len = list(map(len, self.df.splitted_text))
         self._max_text_len = max(splitted_text_len)
+        self._avg_text_len = np.array(splitted_text_len).mean()
 
     def _save_subset(self, subset, random_state):
         if subset == 'all':
