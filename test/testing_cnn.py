@@ -18,7 +18,7 @@ model.summary()
 
 model.fit(
     save_metrics=True,
-    save_checkpoints=False)
+    save_checkpoints=True)
 
 model.save_plots()
 model.inspect_mispredictions('test', 10)

@@ -70,6 +70,10 @@ class CNN(WordEmbeddingModelKeras):
             keras.layers.Conv1D(10, 3, activation='relu'),
             keras.layers.Dropout(0.2),
             keras.layers.Conv1D(10, 2, activation='relu'),
+            keras.layers.Dropout(0.2),
+            keras.layers.Conv1D(10, 2, activation='relu'),
+            keras.layers.Dropout(0.2),
+            keras.layers.Conv1D(10, 2, activation='relu'),
             keras.layers.MaxPooling1D(),
             keras.layers.Flatten(),
             keras.layers.Dense(self.n_categories, activation='softmax')
