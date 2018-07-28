@@ -1,4 +1,3 @@
-#TODO try catch in extractor
 require 'nokogiri'
 require 'json'
 
@@ -28,6 +27,7 @@ def crawler(maxId, numberOfThreads, threadNumber, linkPrefix)
 	puts "we are in the thread #{threadNumber}"
 	fileCounter = 0
 	nullCounter = 0
+	errorCounter = 0
 
 	threadNumber.step(maxId-1, numberOfThreads) do |fileNumber|
 		htmlFile = "#{fileNumber}.html"
@@ -42,18 +42,21 @@ def crawler(maxId, numberOfThreads, threadNumber, linkPrefix)
 
 			nullCounter = nullCounter + 1
 		else
-			fileCounter = fileCounter + 1
 			jsonFile = "#{fileNumber}.json"
 			begin
 				extractor("#{fileNumber%1000}/#{htmlFile}", "#{fileNumber%1000}/#{jsonFile}")
-			rescue
+				fileCounter = fileCounter + 1
+			rescue StandardError => e
 				puts "ERROR: thread #{threadNumber} with errors in file #{fileNumber}"
+				puts e.message
+				puts e.backtrace.inspect
+				errorCounter = errorCounter + 1
 			end
 		end
 		
 		`rm #{fileNumber%1000}/"#{htmlFile}"`
 
-		puts "Thread: #{threadNumber}; File Count: #{fileCounter}; Null Count: #{nullCounter} (Total: #{fileCounter + nullCounter})"
+		puts "Thread: #{threadNumber}; File Count: #{fileCounter}; Null Count: #{nullCounter}; Error Count: #{errorCounter} (Total: #{fileCounter + nullCounter + errorCounter})"
 	end
 end
 
