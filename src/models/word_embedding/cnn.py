@@ -1,7 +1,5 @@
-from .word_embedding_model import WordEmbeddingModelKeras
-import numpy as np
-import tensorflow as tf
 from tensorflow import keras
+from .embedding_layer import EmbeddingLayer
 
 
 """
@@ -13,60 +11,11 @@ http://www.aclweb.org/anthology/D14-1181
 https://github.com/bhaveshoswal/CNN-text-classification-keras
 """
 
-class CNN(WordEmbeddingModelKeras):
-
-    def _row_sentences_to_indices(self, row, answer_list):
-        """
-        Converts a list of strings into a list of indices corresponding
-        to words in the word embedding model.
-        """
-        X_indices = []
-        for word in row.splitted_text:
-            try:
-                word_index = self.wordEmbedModel.vocab[word].index
-            except KeyError:
-                word_index = self.wordEmbedModel.vocab['<unk>'].index
-            X_indices.append(word_index)
-
-        answer_list.append(X_indices)
-
-    def _build_X_input(self, dataObj):
-        X_indices = []
-
-        dataObj.df.apply(
-            self._row_sentences_to_indices, axis=1,
-            args=[X_indices])
-
-        X_indices = tf.keras.preprocessing.sequence.pad_sequences(
-            X_indices,
-            maxlen=self.padded_length,
-            padding='pre',
-            truncating='post')
-        return X_indices
-
-    def pretrained_embedding_layer(self, input_shape):
-        """
-        Creates a Keras Embedding() layer and loads in pre-trained GloVe.
-
-        Returns:
-        embedding_layer -- pretrained layer Keras instance
-        """
-        vocab_len = len(self.wordEmbedModel.vocab)
-
-        embedding_layer = tf.keras.layers.Embedding(
-            input_shape=input_shape,
-            input_dim=vocab_len,
-            output_dim=self.n_features_per_word,
-            input_length=self.padded_length)
-        embedding_layer.trainable = False
-        embedding_layer.build((None,))
-        embedding_layer.set_weights([self.wordEmbedModel.vectors])
-
-        return embedding_layer
+class CNN(EmbeddingLayer):
 
     def _build_model(self):
         return keras.models.Sequential([
-            self.pretrained_embedding_layer(input_shape=(self.padded_length,)),
+            self.pretrained_embedding_layer(),
             keras.layers.Conv1D(512, 3, activation='relu'),
             keras.layers.Dropout(0.2),
             keras.layers.MaxPooling1D(),

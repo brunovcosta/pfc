@@ -1,73 +1,13 @@
 import tensorflow as tf
-from .word_embedding_model import WordEmbeddingModelKeras
+from .embedding_layer import EmbeddingLayer
 
 
-class RNN(WordEmbeddingModelKeras):
-
-    def _row_sentences_to_indices(self, row, answer_list):
-        """
-        Converts a list of strings into a list of indices corresponding
-        to words in the word embedding model.
-        """
-        X_indices = []
-        for word in row.splitted_text:
-            try:
-                word_index = self.wordEmbedModel.vocab[word].index
-            except KeyError:
-                word_index = self.wordEmbedModel.vocab['<unk>'].index
-            X_indices.append(word_index)
-
-        answer_list.append(X_indices)
-
-    def _build_X_input(self, dataObj):
-        X_indices = []
-
-        dataObj.df.apply(
-            self._row_sentences_to_indices, axis=1,
-            args=[X_indices])
-
-        X_indices = tf.keras.preprocessing.sequence.pad_sequences(
-            X_indices,
-            maxlen=self.padded_length,
-            padding='pre',
-            truncating='post')
-        return X_indices
-
-    def pretrained_embedding_layer(self):
-        """
-        Creates a Keras Embedding() layer and loads in pre-trained GloVe.
-
-        Returns:
-        embedding_layer -- pretrained layer Keras instance
-        """
-        vocab_len = len(self.wordEmbedModel.vocab)
-
-        embedding_layer = tf.keras.layers.Embedding(
-            input_dim=vocab_len,
-            output_dim=self.n_features_per_word,
-            input_length=self.padded_length)
-        embedding_layer.trainable = False
-        embedding_layer.build((None,))
-        embedding_layer.set_weights([self.wordEmbedModel.vectors])
-
-        return embedding_layer
-
-    def _build_model(self):
-        """
-        Function creating the model's graph.
-
-        Returns:
-        model -- a model instance in Keras
-        """
-        raise NotImplementedError
-
-
-class RNN2Layers(RNN):
+class RNN2Layers(EmbeddingLayer):
 
     def _build_model(self):
         # it should be of dtype 'int32' (as it contains indices).
         sentence_indices = tf.keras.layers.Input(shape=(self.padded_length,), dtype='int32')
-        embedding_layer = self.pretrained_embedding_layer()
+        embedding_layer = self.pretrained_embedding_layer(mask_zero=True)
         embeddings = embedding_layer(sentence_indices)
 
         X = tf.keras.layers.LSTM(128, return_sequences=True)(embeddings)
@@ -85,12 +25,12 @@ class RNN2Layers(RNN):
         return model
 
 
-class RNNSimple(RNN):
+class RNNSimple(EmbeddingLayer):
 
     def _build_model(self):
         # it should be of dtype 'int32' (as it contains indices).
         sentence_indices = tf.keras.layers.Input(shape=(self.padded_length,), dtype='int32')
-        embedding_layer = self.pretrained_embedding_layer()
+        embedding_layer = self.pretrained_embedding_layer(mask_zero=True)
 
         embeddings = embedding_layer(sentence_indices)
         X = tf.keras.layers.LSTM(128, return_sequences=False)(embeddings)
@@ -102,4 +42,61 @@ class RNNSimple(RNN):
             inputs=sentence_indices,
             outputs=X)
 
+        return model
+
+
+class BidirectionalGRUConv(EmbeddingLayer):
+
+    def _build_model(self):
+        sentence_indices = tf.keras.layers.Input(shape=(self.padded_length,), dtype='int32')
+        embedding_layer = self.pretrained_embedding_layer(mask_zero=False)
+
+        embeddings = embedding_layer(sentence_indices)
+        X = tf.keras.layers.SpatialDropout1D(0.2)(embeddings)
+        X = tf.keras.layers.Bidirectional(
+            tf.keras.layers.GRU(
+                128,
+                return_sequences=True,
+                dropout=0.1,
+                recurrent_dropout=0.1))(X)
+        X = tf.keras.layers.Conv1D(
+            64,
+            kernel_size=3,
+            padding="valid",
+            kernel_initializer="glorot_uniform")(X)
+        avg_pool = tf.keras.layers.GlobalAveragePooling1D()(X)
+        max_pool = tf.keras.layers.GlobalMaxPooling1D()(X)
+        X = tf.keras.layers.concatenate([avg_pool, max_pool])
+
+        X = tf.keras.layers.Dense(self.n_categories)(X)
+        X = tf.keras.layers.Activation('softmax')(X)
+
+        model = tf.keras.models.Model(
+            inputs=sentence_indices,
+            outputs=X)
+        return model
+
+
+class ConvLSTM(EmbeddingLayer):
+
+    def _build_model(self):
+        sentence_indices = tf.keras.layers.Input(shape=(self.padded_length,), dtype='int32')
+        embedding_layer = self.pretrained_embedding_layer(mask_zero=False)
+
+        embeddings = embedding_layer(sentence_indices)
+        X = tf.keras.layers.Dropout(0.25)(embeddings)
+        X = tf.keras.layers.Conv1D(
+            filters=64,
+            kernel_size=5,
+            padding='valid',
+            activation='relu',
+            strides=1)(X)
+        X = tf.keras.layers.MaxPooling1D(pool_size=4)(X)
+        X = tf.keras.layers.LSTM(70)(X)
+        X = tf.keras.layers.Dense(self.n_categories)(X)
+        X = tf.keras.layers.Activation('softmax')(X)
+
+        model = tf.keras.models.Model(
+            inputs=sentence_indices,
+            outputs=X)
         return model
