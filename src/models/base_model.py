@@ -1,4 +1,5 @@
 import numpy as np
+from datetime import datetime
 import sklearn
 import matplotlib.pyplot as plt
 from ..datasetAPI import RotaDosConcursos
@@ -31,7 +32,8 @@ class BaseModel:
         self._X_inputs = {}
 
     def __repr__(self):
-        return type(self).__name__
+        now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
+        return f"{type(self).__name__}_{now}"
 
     def get_model(self):
         """

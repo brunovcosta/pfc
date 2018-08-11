@@ -1,4 +1,3 @@
-from datetime import datetime
 from gensim.models import KeyedVectors
 import tensorflow as tf
 from ..base_model import BaseModel
@@ -14,7 +13,7 @@ class WordEmbeddingModelKeras(BaseModel):
 
         self.n_features_per_word = n_features_per_word
 
-        super(WordEmbeddingModelKeras, self).__init__(
+        super().__init__(
             random_state,
             frac,
             dict_name,
@@ -32,7 +31,7 @@ class WordEmbeddingModelKeras(BaseModel):
             self.max_text_len)
 
     def __repr__(self):
-        return f"{type(self).__name__}_{self.n_features_per_word}"
+        return f"{super().__repr__()}_{self.n_features_per_word}dimensions"
 
     def summary(self):
         self.get_model().summary()
@@ -41,9 +40,6 @@ class WordEmbeddingModelKeras(BaseModel):
         print(f"fitting model {self}...")
 
         model = self.get_model()
-
-        now = datetime.utcnow().strftime("%Y%m%d%H%M%S")
-        log_name = f'run-{now}-{self}'
 
         model.compile(
             loss='categorical_crossentropy',
@@ -54,7 +50,7 @@ class WordEmbeddingModelKeras(BaseModel):
         if save_checkpoints:
             callbacks.append(
                 tf.keras.callbacks.ModelCheckpoint(
-                    f'./logs/keras_checkpoints/{log_name}.hdf5',
+                    f'./logs/keras_checkpoints/{self}.hdf5',
                     monitor='val_loss',
                     verbose=1,
                     save_best_only=True,
@@ -63,7 +59,7 @@ class WordEmbeddingModelKeras(BaseModel):
         if save_metrics:
             callbacks.append(TrainValTensorBoard(
                 [self.get_X_input(self.trainObj), self.trainObj.target_one_hot],
-                log_dir=f'./logs/tf_logs/{log_name}',
+                log_dir=f'./logs/tf_logs/{self}',
                 write_graph=True))
 
         if not callbacks:
