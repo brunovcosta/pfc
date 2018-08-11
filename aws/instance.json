@@ -1,10 +1,18 @@
 {
 	"InstanceType": "c5.large",
 	"ImageId": "ami-885a60ed",
+	"KeyName": "2018-08-11-pfc",
 	"Monitoring": {
 		"Enabled": true
 	},
 	"DisableApiTermination": false,
 	"DryRun": false,
-	"InstanceInitiatedShutdownBehavior": "terminate"
+	"InstanceInitiatedShutdownBehavior": "terminate",
+	"TagSpecifications": [{
+		"ResourceType": "instance",
+		"Tags": [{
+			"Key": "Name",
+			"Value": "pfc-kamikaze-run"
+		}]
+	}]
 }
