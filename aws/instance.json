@@ -1,0 +1,10 @@
+{
+	"InstanceType": "c5.large",
+	"ImageId": "ami-885a60ed",
+	"Monitoring": {
+		"Enabled": true
+	},
+	"DisableApiTermination": false,
+	"DryRun": false,
+	"InstanceInitiatedShutdownBehavior": "terminate"
+}

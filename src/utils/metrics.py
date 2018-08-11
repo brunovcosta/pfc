@@ -68,7 +68,7 @@ class Metrics:
 class MetricsBagOfWords(Metrics):
 
     def __init__(self, model, train_data, validation_data):
-        super(MetricsBagOfWords, self).__init__()
+        super().__init__()
 
         for subset, data in [('val', validation_data), ('train', train_data)]:
             try:
@@ -97,7 +97,7 @@ class MetricsBagOfWords(Metrics):
 class MetricsTensorboard(Metrics):
 
     def __init__(self, model, train_data, validation_data):
-        super(MetricsTensorboard, self).__init__()
+        super().__init__()
         self.loss = {}
 
         for subset, data in [('val', validation_data), ('train', train_data)]:

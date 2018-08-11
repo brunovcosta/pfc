@@ -1,3 +1,4 @@
+#!/bin/sh
 # download code
 git clone https://github.com/brunovcosta/PFC
 pip install -r PFC/requirements.txt

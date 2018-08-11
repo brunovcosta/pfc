@@ -7,7 +7,7 @@ class TrainValTensorBoard(tf.keras.callbacks.TensorBoard):
         self.training_data = train_data
         # Make the original `TensorBoard` log to a subdirectory 'training'
         self.log_dir_train = f'{log_dir}/training'
-        super(TrainValTensorBoard, self).__init__(self.log_dir_train, **kwargs)
+        super().__init__(self.log_dir_train, **kwargs)
 
         # Log the validation metrics to a separate subdirectory
         self.log_dir_val = f'{log_dir}/validation'
@@ -17,7 +17,7 @@ class TrainValTensorBoard(tf.keras.callbacks.TensorBoard):
         self._writer = {}
         self._writer['train'] = tf.summary.FileWriter(self.log_dir_train)
         self._writer['val'] = tf.summary.FileWriter(self.log_dir_val)
-        super(TrainValTensorBoard, self).set_model(model)
+        super().set_model(model)
 
     def on_epoch_end(self, epoch, logs=None):
         metrics = MetricsTensorboard(
@@ -28,9 +28,9 @@ class TrainValTensorBoard(tf.keras.callbacks.TensorBoard):
             self._writer,
             epoch)
 
-        super(TrainValTensorBoard, self).on_epoch_end(epoch, logs)
+        super().on_epoch_end(epoch, logs)
 
     def on_train_end(self, logs=None):
-        super(TrainValTensorBoard, self).on_train_end(logs)
+        super().on_train_end(logs)
         for name in ['val', 'train']:
             self._writer[name].close()
