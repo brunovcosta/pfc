@@ -64,7 +64,7 @@ def extractor(input_path, output_path)
 	input_file = open input_path
 	output_file = File.new output_path, "w"
 
-	html = Nokogiri::HTML input_file.read
+	html = Nokogiri::HTML(input_file.read , nil, 'UTF-8')
 
 	output_data = {
 		id: (input_path.scan /\d+/).last,
