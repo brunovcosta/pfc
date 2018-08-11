@@ -14,7 +14,7 @@ model = ConvLSTM(
     min_number_per_label=10000,
     frac=1)
 
-model.summary()
+model.summary(save_summary=True)
 
 model.fit(
     save_metrics=True,

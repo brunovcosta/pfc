@@ -33,8 +33,11 @@ class WordEmbeddingModelKeras(BaseModel):
     def __repr__(self):
         return f"{super().__repr__()}_{self.n_features_per_word}dimensions"
 
-    def summary(self):
+    def summary(self, save_summary=False):
         self.get_model().summary()
+        if save_summary:
+            with open(f'./logs/summaries/{self}_summary.txt','w') as fh:
+                self.get_model().summary(print_fn=lambda x: fh.write(x + '\n'))
 
     def fit(self, save_metrics=False, save_checkpoints=False):
         print(f"fitting model {self}...")
