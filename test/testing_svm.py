@@ -16,4 +16,4 @@ model.fit(save_metrics=True)
 
 model.save_plots()
 
-model.inspect_mispredictions('test', 3)
+model.inspect_mispredictions('val', 10)

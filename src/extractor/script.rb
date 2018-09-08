@@ -1,1 +1,0 @@
-`ruby crawler.rb 4 >> ../../logs/extractor/crawler.log`

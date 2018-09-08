@@ -32,18 +32,18 @@ class BagOfWords(BaseModel):
         print(f"fitting model {self}...")
         model = self.get_model()
         model.fit(
-            self.get_X_input(self.trainObj),
-            self.trainObj.target)
+            self.get_X_input(self.data['train']),
+            self.data['train'].target)
         if save_metrics:
             metrics = MetricsBagOfWords(
                 model,
                 train_data=(
-                    self.get_X_input(self.trainObj),
-                    self.trainObj.target_one_hot,
+                    self.get_X_input(self.data['train']),
+                    self.data['train'].target_one_hot,
                 ),
                 validation_data=(
-                    self.get_X_input(self.testObj),
-                    self.testObj.target_one_hot
+                    self.get_X_input(self.data['val']),
+                    self.data['val'].target_one_hot
                 )
             )
             metrics.save_results(str(self))

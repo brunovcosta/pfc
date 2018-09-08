@@ -5,21 +5,16 @@ import os
 import nltk
 import pandas as pd
 import numpy as np
-import matplotlib.pyplot as plt
 from sklearn.model_selection import train_test_split
+from .api import Dataset
 
 
-class RotaDosConcursos:
+class RotaDosConcursos(Dataset):
 
     def __init__(self, random_state=1,
-                 subset='all', frac=1,
-                 min_number_per_label=0,
+                 frac=1, min_number_per_label=0,
                  dict_name=None):
         """
-        subset: 'train' or 'test', 'all', optional
-            Select the dataset to load: 'train' for the training set, 'test'
-            for the test set, 'all' for both, with shuffled ordering.
-
         random_state: numpy random number generator or seed integer
             Used to shuffle the dataset.
 
@@ -37,6 +32,7 @@ class RotaDosConcursos:
             to be grouped.
             ("default.json" is a recommended dictionary)
         """
+        self.random_state = random_state
 
         csv_path = 'dataset/rota_dos_concursos.csv'
 
@@ -81,62 +77,52 @@ class RotaDosConcursos:
             }, index=ids)
 
             self._drop_inconsistencies()
-            self.df.reset_index(inplace=True, drop=True)        # Temporary solution (crawler change TODO)
             self.df.to_csv(csv_path)
 
-        self._drop_inconsistencies()
         if dict_name is not None:
             self.df.apply(
                 self._apply_group_labels,
                 axis=1,
                 args=[self._generate_group_labels_dict(dict_name)])
         self._drop_labels_with_insufficient_data(min_number_per_label)
-        self.df = self.df.sample(frac=frac, random_state=random_state)
+        self.df = self.df.sample(frac=frac, random_state=self.random_state)
         self._one_hot = pd.get_dummies(self.df['label'])
         self._save_text_properties()
-        self.df, self._one_hot = self._save_subset(subset, random_state)
 
-    @property
-    def target_names(self):
-        return self.target_one_hot.axes[1]
+    def split_in_subsets(self):
+        """
+        Returns a tuple with three Dataset objects, one for each
+        of the following sets: training, validation, and test.
+        """
 
-    @property
-    def target(self):
-        return self.df['label']
+        df_train, df_val_test = train_test_split(
+            self.df,
+            test_size=0.2,
+            random_state=self.random_state)
+        df_val, df_test = train_test_split(
+            df_val_test,
+            test_size=0.5,
+            random_state=self.random_state)
 
-    @property
-    def text(self):
-        return self.df['text']
+        one_hot_train, one_hot_val_test = train_test_split(
+            self._one_hot,
+            test_size=0.2,
+            random_state=self.random_state)
+        one_hot_val, one_hot_test = train_test_split(
+            one_hot_val_test,
+            test_size=0.5,
+            random_state=self.random_state)
 
-    @property
-    def splitted_text(self):
-        return self.df['splitted_text']
+        dataset_parameters = {
+            "target_names": self.target_names,
+            "max_text_len": self.max_text_length,
+            "avg_text_len": self.avg_text_length,
+        }
+        trainObj = Dataset(df_train, one_hot_train, **dataset_parameters)
+        valObj = Dataset(df_val, one_hot_val, **dataset_parameters)
+        testObj = Dataset(df_test, one_hot_test, **dataset_parameters)
 
-    @property
-    def target_one_hot(self):
-        return self._one_hot
-
-    @property
-    def max_text_length(self):
-        return self._max_text_len
-
-    @property
-    def avg_text_length(self):
-        return self._avg_text_len
-
-    def save_pie_graph(self):
-        if len(self.target_names) <= 10:
-            autopct = '%1.1f%%'
-        else:
-            autopct = None
-        plt.figure(figsize=(16, 14))
-        self.target.value_counts().plot(
-            kind='pie',
-            autopct=autopct,
-            legend=False,
-            title='labels distribution',
-            fontsize=14)
-        plt.savefig(f'logs/graph_figures/pie_graph.png')
+        return trainObj, valObj, testObj
 
     def _json_extraction(self, filename, texts, splitted_texts, labels, ids):
         data = json.load(open(filename), encoding='UTF-8')
@@ -219,22 +205,4 @@ class RotaDosConcursos:
         splitted_text_len = list(map(len, self.df.splitted_text))
         self._max_text_len = max(splitted_text_len)
         self._avg_text_len = np.array(splitted_text_len).mean()
-
-    def _save_subset(self, subset, random_state):
-        if subset == 'all':
-            return self.df, self._one_hot
-
-        df_train, df_test = train_test_split(
-            self.df,
-            test_size=0.2,
-            random_state=random_state)
-        _one_hot_train, _one_hot_test = train_test_split(
-            self._one_hot,
-            test_size=0.2,
-            random_state=random_state)
-
-        if subset == 'train':
-            return df_train, _one_hot_train
-
-        if subset == 'test':
-            return df_test, _one_hot_test
+        self._target_names = self.target_one_hot.axes[1]

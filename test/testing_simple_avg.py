@@ -23,4 +23,4 @@ model.fit(
 # model.load_model("run-20180718142233-SimpleAvg_50")
 
 model.save_plots()
-model.inspect_mispredictions('test', 10)
+model.inspect_mispredictions('val', 10)

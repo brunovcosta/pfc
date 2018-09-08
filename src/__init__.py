@@ -1,3 +1,3 @@
-from .datasetAPI import RotaDosConcursos
+from . import datasetAPI
 from . import models
 from . import utils

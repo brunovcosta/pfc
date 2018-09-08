@@ -21,4 +21,4 @@ model.fit(
     save_checkpoints=True)
 
 model.save_plots()
-model.inspect_mispredictions('test', 10)
+model.inspect_mispredictions('val', 10)

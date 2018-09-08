@@ -27,7 +27,7 @@ class WordEmbeddingModelKeras(BaseModel):
             unicode_errors="ignore")
 
         self.padded_length = min(
-            int(self.trainObj.avg_text_length * 2),
+            int(self.data['train'].avg_text_length * 2),
             self.max_text_len)
 
     def __repr__(self):
@@ -61,7 +61,7 @@ class WordEmbeddingModelKeras(BaseModel):
 
         if save_metrics:
             callbacks.append(TrainValTensorBoard(
-                [self.get_X_input(self.trainObj), self.trainObj.target_one_hot],
+                [self.get_X_input(self.data['train']), self.data['train'].target_one_hot],
                 log_dir=f'./logs/tf_logs/{self}',
                 write_graph=True))
 
@@ -69,11 +69,11 @@ class WordEmbeddingModelKeras(BaseModel):
             callbacks = None
 
         model.fit(
-            self.get_X_input(self.trainObj),
-            self.trainObj.target_one_hot,
+            self.get_X_input(self.data['train']),
+            self.data['train'].target_one_hot,
             validation_data=(
-                self.get_X_input(self.testObj),
-                self.testObj.target_one_hot),
+                self.get_X_input(self.data['val']),
+                self.data['val'].target_one_hot),
             epochs=9,
             batch_size=32,
             shuffle=True,
