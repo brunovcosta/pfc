@@ -7,10 +7,8 @@ from ...utils import TrainValTensorBoard
 
 class WordEmbeddingModelKeras(BaseModel):
 
-    def __init__(self, random_state=1, frac=1,
+    def __init__(self, dataset_distributer,
                  n_features_per_word=50,
-                 dict_name=None,
-                 min_number_per_label=0,
                  hyperparameters_file="default"):
 
         self.n_features_per_word = n_features_per_word
@@ -18,11 +16,7 @@ class WordEmbeddingModelKeras(BaseModel):
         with open(f"src/models/word_embedding/hyperparameter_config/{hyperparameters_file}.json", encoding="UTF-8") as file:
             self.hyperparameters = json.load(file)
 
-        super().__init__(
-            random_state,
-            frac,
-            dict_name,
-            min_number_per_label)
+        super().__init__(dataset_distributer)
 
         print("loading gensim model...")
         wordEmbedPath = 'dataset/glove/glove_s{}.txt'.format(

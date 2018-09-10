@@ -10,9 +10,9 @@ class RNN2Layers(EmbeddingLayer):
         embedding_layer = self.pretrained_embedding_layer(mask_zero=True)
         embeddings = embedding_layer(sentence_indices)
 
-        X = tf.keras.layers.LSTM(128, return_sequences=True)(embeddings)
+        X = tf.keras.layers.LSTM(self.n_features_per_word, return_sequences=True)(embeddings)
         X = tf.keras.layers.Dropout(0.5)(X)
-        X = tf.keras.layers.LSTM(128, return_sequences=False)(X)
+        X = tf.keras.layers.LSTM(self.n_features_per_word, return_sequences=False)(X)
         X = tf.keras.layers.Dropout(0.5)(X)
 
         X = tf.keras.layers.Dense(self.n_categories)(X)
@@ -33,7 +33,7 @@ class RNNSimple(EmbeddingLayer):
         embedding_layer = self.pretrained_embedding_layer(mask_zero=True)
 
         embeddings = embedding_layer(sentence_indices)
-        X = tf.keras.layers.LSTM(128, return_sequences=False)(embeddings)
+        X = tf.keras.layers.LSTM(self.n_features_per_word, return_sequences=False)(embeddings)
 
         X = tf.keras.layers.Dense(self.n_categories)(X)
         X = tf.keras.layers.Activation('softmax')(X)

@@ -2,21 +2,12 @@ import numpy as np
 from datetime import datetime
 import sklearn
 import matplotlib.pyplot as plt
-from ..datasetAPI import RotaDosConcursos
 
 
 class BaseModel:
 
-    def __init__(self, random_state=1, frac=1,
-                 dict_name=None,
-                 min_number_per_label=0):
-        print(f"loading dataset to {self}...")
-        rota_dos_concursos = RotaDosConcursos(
-            frac=frac,
-            random_state=random_state,
-            dict_name=dict_name,
-            min_number_per_label=min_number_per_label)
-        train, val, test = rota_dos_concursos.split_in_subsets()
+    def __init__(self, dataset_distributer):
+        train, val, test = dataset_distributer.split_in_subsets()
         self.data = {
             "train": train,
             "val": val,
