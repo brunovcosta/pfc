@@ -32,7 +32,7 @@ class RotaDosConcursos(Dataset):
             to be grouped.
             ("default.json" is a recommended dictionary)
         """
-        self.random_state = random_state
+        self._random_state = random_state
 
         csv_path = 'dataset/rota_dos_concursos.csv'
 
@@ -85,7 +85,7 @@ class RotaDosConcursos(Dataset):
                 axis=1,
                 args=[self._generate_group_labels_dict(dict_name)])
         self._drop_labels_with_insufficient_data(min_number_per_label)
-        self.df = self.df.sample(frac=frac, random_state=self.random_state)
+        self.df = self.df.sample(frac=frac, random_state=self._random_state)
         self._one_hot = pd.get_dummies(self.df['label'])
         self._save_text_properties()
 
@@ -98,25 +98,26 @@ class RotaDosConcursos(Dataset):
         df_train, df_val_test = train_test_split(
             self.df,
             test_size=0.2,
-            random_state=self.random_state)
+            random_state=self._random_state)
         df_val, df_test = train_test_split(
             df_val_test,
             test_size=0.5,
-            random_state=self.random_state)
+            random_state=self._random_state)
 
         one_hot_train, one_hot_val_test = train_test_split(
             self._one_hot,
             test_size=0.2,
-            random_state=self.random_state)
+            random_state=self._random_state)
         one_hot_val, one_hot_test = train_test_split(
             one_hot_val_test,
             test_size=0.5,
-            random_state=self.random_state)
+            random_state=self._random_state)
 
         dataset_parameters = {
             "target_names": self.target_names,
             "max_text_len": self.max_text_length,
             "avg_text_len": self.avg_text_length,
+            "median_text_len": self.median_text_length,
         }
         trainObj = Dataset(df_train, one_hot_train, **dataset_parameters)
         valObj = Dataset(df_val, one_hot_val, **dataset_parameters)
@@ -203,6 +204,8 @@ class RotaDosConcursos(Dataset):
 
     def _save_text_properties(self):
         splitted_text_len = list(map(len, self.df.splitted_text))
+        splitted_text_len = np.array(splitted_text_len)
         self._max_text_len = max(splitted_text_len)
-        self._avg_text_len = np.array(splitted_text_len).mean()
+        self._avg_text_len = np.mean(splitted_text_len)
+        self._median_text_len = np.median(splitted_text_len)
         self._target_names = self.target_one_hot.axes[1]

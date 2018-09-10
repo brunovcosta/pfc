@@ -1,5 +1,6 @@
 from gensim.models import KeyedVectors
 import tensorflow as tf
+import json
 from ..base_model import BaseModel
 from ...utils import TrainValTensorBoard
 
@@ -9,9 +10,13 @@ class WordEmbeddingModelKeras(BaseModel):
     def __init__(self, random_state=1, frac=1,
                  n_features_per_word=50,
                  dict_name=None,
-                 min_number_per_label=0):
+                 min_number_per_label=0,
+                 hyperparameters_file="default"):
 
         self.n_features_per_word = n_features_per_word
+        self.hyperparameters_file = hyperparameters_file
+        with open(f"src/models/word_embedding/hyperparameter_config/{hyperparameters_file}.json", encoding="UTF-8") as file:
+            self.hyperparameters = json.load(file)
 
         super().__init__(
             random_state,
@@ -31,7 +36,7 @@ class WordEmbeddingModelKeras(BaseModel):
             self.max_text_len)
 
     def __repr__(self):
-        return f"{super().__repr__()}_{self.n_features_per_word}dimensions"
+        return f"{super().__repr__()}_{self.n_features_per_word}dimensions_{self.hyperparameters_file}"
 
     def summary(self, save_summary=False):
         self.get_model().summary()
@@ -44,9 +49,10 @@ class WordEmbeddingModelKeras(BaseModel):
 
         model = self.get_model()
 
+        optimizer = tf.keras.optimizers.Adam(lr=self.hyperparameters["learning_rate"])
         model.compile(
             loss='categorical_crossentropy',
-            optimizer='adam')
+            optimizer=optimizer)
 
         callbacks = []
 
@@ -74,8 +80,8 @@ class WordEmbeddingModelKeras(BaseModel):
             validation_data=(
                 self.get_X_input(self.data['val']),
                 self.data['val'].target_one_hot),
-            epochs=9,
-            batch_size=32,
+            epochs=self.hyperparameters["epochs"],
+            batch_size=self.hyperparameters["batch_size"],
             shuffle=True,
             callbacks=callbacks)
 
@@ -86,6 +92,7 @@ class WordEmbeddingModelKeras(BaseModel):
 
         model.load_weights(f'./logs/keras_checkpoints/{checkpoint_file}.hdf5')
 
+        optimizer = tf.keras.optimizers.Adam(lr=self.hyperparameters["learning_rate"])
         model.compile(
             loss='categorical_crossentropy',
-            optimizer='adam')
+            optimizer=optimizer)

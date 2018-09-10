@@ -3,7 +3,7 @@ import matplotlib.pyplot as plt
 
 class Dataset:
 
-    def __init__(self, df, one_hot, target_names, max_text_len, avg_text_len):
+    def __init__(self, df, one_hot, target_names, max_text_len, avg_text_len, median_text_len):
         """
         df: pandas DataFrame with the following columns:
             text, label, splitted_text
@@ -16,13 +16,16 @@ class Dataset:
 
         max_text_len: integer
 
-        avg_text_len: integer
+        avg_text_len: float
+
+        median_text_len: integer
         """
         self.df = df
         self._one_hot = one_hot
         self._target_names = target_names
         self._max_text_len = max_text_len
         self._avg_text_len = avg_text_len
+        self._median_text_len = median_text_len
 
     @property
     def target_names(self):
@@ -51,6 +54,10 @@ class Dataset:
     @property
     def avg_text_length(self):
         return self._avg_text_len
+
+    @property
+    def median_text_length(self):
+        return self._median_text_len
 
     def save_pie_graph(self):
         if len(self.target_names) <= 10:
