@@ -6,7 +6,7 @@
 	echo "pip install"
 	pip install -r PFC/requirements.txt
 	echo "download nltk datasets"
-	python PFC/nltk_download.py
+	python3 PFC/nltk_download.py
 
 	# download glove
 	echo "download glove_50.zip"
