@@ -4,7 +4,7 @@ import sys
 module_root = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(module_root))
 
-from src.models.word_embedding import SepCNN
+from src.models.word_embedding.embedding_layer import SepCNN
 from src.datasetAPI import RotaDosConcursos
 
 print("loading dataset...")
