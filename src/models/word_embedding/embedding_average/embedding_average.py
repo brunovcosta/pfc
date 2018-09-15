@@ -1,8 +1,8 @@
 import numpy as np
 import tensorflow as tf
-from .word_embedding_model import WordEmbeddingModelKeras
+from ..word_embedding_model import WordEmbeddingModelKeras
 
-class SimpleAvg(WordEmbeddingModelKeras):
+class EmbeddingAverage(WordEmbeddingModelKeras):
 
     def _row_sentence_to_avg(self, row, answer_list):
         """
@@ -27,14 +27,3 @@ class SimpleAvg(WordEmbeddingModelKeras):
         dataObj.df.apply(self._row_sentence_to_avg, axis=1, args=[X_avg])
         X_avg = np.array(X_avg)
         return X_avg
-
-    def _build_model(self):
-        X_input = tf.keras.layers.Input(shape=(self.n_features_per_word,))
-        X = tf.keras.layers.Dense(self.n_categories, name='fc')(X_input)
-        X = tf.keras.layers.Activation('softmax')(X)
-        model = tf.keras.models.Model(
-            inputs=X_input,
-            outputs=X,
-            name='simple_model')
-
-        return model

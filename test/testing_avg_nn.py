@@ -4,7 +4,7 @@ import sys
 module_root = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(module_root))
 
-from src.models.word_embedding import SimpleAvg
+from src.models.word_embedding.embedding_average import SimpleNeuralNet
 from src.datasetAPI import RotaDosConcursos
 
 print("loading dataset...")
@@ -14,9 +14,10 @@ rota_dos_concursos = RotaDosConcursos(
     dict_name="default.json",
     min_number_per_label=10000)
 
-model = SimpleAvg(
+model = SimpleNeuralNet(
     rota_dos_concursos,
-    n_features_per_word=5)
+    n_features_per_word=50,
+    hyperparameters_file="default")
 
 model.summary(save_summary=True)
 
@@ -24,7 +25,7 @@ model.fit(
     save_metrics=True,
     save_checkpoints=True)
 
-# model.load_model("run-20180718142233-SimpleAvg_50")
+# model.load_model("run-20180718142233-SimpleNeuralNet_50")
 
 model.save_plots()
 model.inspect_mispredictions('val', 10)

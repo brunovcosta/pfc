@@ -2,7 +2,7 @@ import tensorflow as tf
 from .embedding_layer import EmbeddingLayer
 
 
-class RNN2Layers(EmbeddingLayer):
+class StackedRNN(EmbeddingLayer):
 
     def _build_model(self):
         # it should be of dtype 'int32' (as it contains indices).
@@ -25,7 +25,7 @@ class RNN2Layers(EmbeddingLayer):
         return model
 
 
-class RNNSimple(EmbeddingLayer):
+class RNN(EmbeddingLayer):
 
     def _build_model(self):
         # it should be of dtype 'int32' (as it contains indices).
