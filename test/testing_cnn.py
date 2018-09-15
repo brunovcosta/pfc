@@ -4,7 +4,7 @@ import sys
 module_root = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(module_root))
 
-from src.models.word_embedding import CNN
+from src.models.word_embedding.embedding_layer import CNN
 from src.datasetAPI import RotaDosConcursos
 
 print("loading dataset...")
@@ -16,7 +16,8 @@ rota_dos_concursos = RotaDosConcursos(
 
 model = CNN(
     rota_dos_concursos,
-    n_features_per_word=50)
+    n_features_per_word=50,
+    hyperparameters_file="default")
 
 model.summary(save_summary=True)
 

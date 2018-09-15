@@ -1,6 +1,6 @@
 import tensorflow as tf
 import numpy as np
-from .word_embedding_model import WordEmbeddingModelKeras
+from ..word_embedding_model import WordEmbeddingModelKeras
 
 
 class EmbeddingLayer(WordEmbeddingModelKeras):
