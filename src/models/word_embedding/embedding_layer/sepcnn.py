@@ -25,7 +25,7 @@ class SepCNN(EmbeddingLayer):
 
     def _build_model(self):
         pretrained = self.pretrained_embedding_layer(mask_zero=True)
-        self.sepcnn_model(2,64,3,self.n_features_per_word,0.2,3,pretrained.input_shape,self.n_categories,len(self.wordEmbedModel),True,False,pretrained)
+        return self.sepcnn_model(2,64,3,self.n_features_per_word,0.2,3,pretrained.input_shape,self.n_categories,len(self.wordEmbedModel),True,False,pretrained)
 
     def sepcnn_model(self,
                      blocks,
