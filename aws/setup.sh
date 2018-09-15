@@ -24,6 +24,7 @@
 	#python test/testing_bag_of_words.py &
 	#python test/testing_simple_avg.py &
 	#python test/testing_cnn.py &
+	pwd
 	python test/testing_sepcnn.py#&
 	#python test/testing_rnn.py
 
