@@ -14,7 +14,7 @@ rota_dos_concursos = RotaDosConcursos(
     dict_name="default.json",
     min_number_per_label=10000)
 
-model = StackedRNN(
+model = RNN(
     rota_dos_concursos,
     n_features_per_word=100,
     hyperparameters_file="default")
