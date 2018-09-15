@@ -19,13 +19,12 @@
 	echo "download rota_dos_concursos.csv"
 	wget https://s3.us-east-2.amazonaws.com/pfc-ime/rota_dos_concursos.csv -O PFC/dataset/rota_dos_concursos.csv
 	# run tests
-	cd PFC
 	echo "run tests"
 	#python test/testing_bag_of_words.py &
 	#python test/testing_simple_avg.py &
 	#python test/testing_cnn.py &
 	pwd
-	python test/testing_sepcnn.py#&
+	python PFC/test/testing_sepcnn.py
 	#python test/testing_rnn.py
 
 	#wait
