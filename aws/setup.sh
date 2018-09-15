@@ -21,13 +21,13 @@
 	# run tests
 	cd PFC
 	echo "run tests"
-	python test/testing_bag_of_words.py &
-	python test/testing_simple_avg.py &
-	python test/testing_cnn.py &
-	python test/testing_sepcnn.py &
-	python test/testing_rnn.py
+	#python test/testing_bag_of_words.py &
+	#python test/testing_simple_avg.py &
+	#python test/testing_cnn.py &
+	python test/testing_sepcnn.py#&
+	#python test/testing_rnn.py
 
-	wait
+	#wait
 
 	echo "upload logs"
 	aws s3 sync PFC/logs s3://pfc-ime/logs

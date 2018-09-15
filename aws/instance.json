@@ -1,5 +1,5 @@
 {
-	"InstanceType": "c5.large",
+	"InstanceType": "p2.xlarge",
 	"ImageId": "ami-885a60ed",
 	"KeyName": "2018-08-11-pfc",
 	"Monitoring": {
