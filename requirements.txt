@@ -1,7 +1,8 @@
 awscli==1.15.63
 tensorboard==1.8.0
-tensorflow==1.8.0
-# tensorflow-gpu==1.8.0
+#tensorflow==1.8.0
+tensorflow-gpu==1.8.0
+keras
 numpy==1.14.3
 scikit-learn==0.19.1
 pandas==0.22.0
