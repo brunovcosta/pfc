@@ -1,13 +1,13 @@
-from tensorflow.keras import models
-from tensorflow.keras import initializers
-from tensorflow.keras import regularizers
+from tensorflow.python.keras import models
+from tensorflow.python.keras import initializers
+from tensorflow.python.keras import regularizers
 
-from tensorflow.keras.layers import Dense
-from tensorflow.keras.layers import Dropout
-from tensorflow.keras.layers import Embedding
-from tensorflow.keras.layers import SeparableConv1D
-from tensorflow.keras.layers import MaxPooling1D
-from tensorflow.keras.layers import GlobalAveragePooling1D
+from tensorflow.python.keras.layers import Dense
+from tensorflow.python.keras.layers import Dropout
+from tensorflow.python.keras.layers import Embedding
+from tensorflow.python.keras.layers import SeparableConv1D
+from tensorflow.python.keras.layers import MaxPooling1D
+from tensorflow.python.keras.layers import GlobalAveragePooling1D
 
 from .embedding_layer import EmbeddingLayer
 
