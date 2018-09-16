@@ -63,7 +63,7 @@ for model in models:
 
     model.fit(
         save_metrics=True,
-        save_checkpoints=True)
+        save_checkpoints=False)
 
     model.save_plots()
     model.inspect_mispredictions('val', 10)
