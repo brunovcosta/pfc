@@ -14,7 +14,7 @@
 	echo "download glove"
 	for n_features_per_word in 50 100 300 600 1000
 	do
-		echo "download" ${n_features_per_word{}
+		echo "download" ${n_features_per_word}
 		wget http://143.107.183.175:22980/download.php?file=embeddings/glove/glove_s${n_features_per_word}.zip -O glove_50.zip
 		unzip glove_${n_features_per_word}.zip
 		mv glove_s${n_features_per_word}.txt PFC/dataset/glove
