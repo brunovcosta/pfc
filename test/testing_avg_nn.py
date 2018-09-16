@@ -16,7 +16,7 @@ rota_dos_concursos = RotaDosConcursos(
 
 model = SimpleNeuralNet(
     rota_dos_concursos,
-    n_features_per_word=50,
+    n_features_per_word=int(sys.argv[1]),
     hyperparameters_file="default")
 
 model.summary(save_summary=True)

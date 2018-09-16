@@ -16,7 +16,7 @@ rota_dos_concursos = RotaDosConcursos(
 
 model = SepCNN(
     rota_dos_concursos,
-    n_features_per_word=50)
+    n_features_per_word=sys.argv[1])
 
 model.summary(save_summary=True)
 

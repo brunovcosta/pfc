@@ -16,7 +16,7 @@ rota_dos_concursos = RotaDosConcursos(
 
 model = StackedRNN(
     rota_dos_concursos,
-    n_features_per_word=100,
+    n_features_per_word=sys.argv[1],
     hyperparameters_file="default")
 
 model.summary(save_summary=True)
