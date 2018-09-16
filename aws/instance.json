@@ -1,6 +1,6 @@
 {
-	"InstanceType": "p2.xlarge",
-	"ImageId": "ami-885a60ed",
+	"InstanceType": "t2.large",
+	"ImageId": "ami-0be60474e95aea8a5",
 	"KeyName": "2018-08-11-pfc",
 	"Monitoring": {
 		"Enabled": true
