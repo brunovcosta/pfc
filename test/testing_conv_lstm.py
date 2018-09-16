@@ -4,7 +4,7 @@ import sys
 module_root = os.path.join(os.path.dirname(__file__), '..')
 sys.path.insert(0, os.path.abspath(module_root))
 
-from src.models.word_embedding.embedding_layer import RNN
+from src.models.word_embedding.embedding_layer import ConvLSTM
 from src.datasetAPI import RotaDosConcursos
 
 print("loading dataset...")
@@ -14,7 +14,7 @@ rota_dos_concursos = RotaDosConcursos(
     dict_name="default.json",
     min_number_per_label=10000)
 
-model = RNN(
+model = ConvLSTM(
     rota_dos_concursos,
     n_features_per_word=100,
     hyperparameters_file="default")
