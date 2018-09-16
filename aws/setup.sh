@@ -4,7 +4,7 @@
 	echo "git clone"
 	git clone https://github.com/brunovcosta/PFC
 	echo "pip install"
-	pip install -r PFC/requirements.txt
+	pip3 install -r PFC/requirements.txt
 	echo "download nltk datasets"
 	python3 PFC/nltk_download.py
 
