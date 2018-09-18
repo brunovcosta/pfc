@@ -7,6 +7,6 @@ for n in [50,100,300,600,1000] do
 		model = file.gsub(path_start,"").gsub(path_end,"")
 		rendered = open("./template.sh").read.gsub("${n_features_per_word}",n.to_s).gsub("${model}",model)
 		File.open("setup_#{n}_#{model}.sh","w").write rendered
-		launch.write "\naws ec2 run-instances --cli-input-json file://instance.json"# --user-data file://setup_#{n}_#{model}.sh"
+		launch.write "\naws ec2 run-instances --cli-input-json file://instance.json --user-data file://setup_#{n}_#{model}.sh"
 	end
 end

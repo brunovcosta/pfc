@@ -25,7 +25,7 @@ class SepCNN(EmbeddingLayer):
 
     def _build_model(self):
         pretrained = self.pretrained_embedding_layer(mask_zero=True)
-        return self.sepcnn_model(2,64,3,self.n_features_per_word,0.2,3,[self.max_text_len],self.n_categories,len(self.wordEmbedModel.wv),True,False,pretrained)
+        return self.sepcnn_model(2,64,3,self.n_features_per_word,0.2,3,[self.max_text_len],self.n_categories,len(self.wordEmbedModel.vocab),True,False,pretrained)
 
     def sepcnn_model(self,
                      blocks,
@@ -61,20 +61,7 @@ class SepCNN(EmbeddingLayer):
         """
         op_units, op_activation = self._get_last_layer_units_and_activation(num_classes)
         model = models.Sequential()
-
-        # Add embedding layer. If pre-trained embedding is used add weights to the
-        # embeddings layer and set trainable to input is_embedding_trainable flag.
-        if use_pretrained_embedding:
-            model.add(Embedding(input_dim=num_features,
-                                output_dim=embedding_dim,
-                                input_length=input_shape[0],
-                                weights=[embedding_matrix],
-                                trainable=is_embedding_trainable))
-        else:
-            model.add(Embedding(input_dim=num_features,
-                                output_dim=embedding_dim,
-                                input_length=input_shape[0]))
-
+        model.add(self.pretrained_embedding_layer(mask_zero=False))
         for _ in range(blocks-1):
             model.add(Dropout(rate=dropout_rate))
             model.add(SeparableConv1D(filters=filters,
