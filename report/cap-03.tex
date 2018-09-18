@@ -11,12 +11,12 @@ A primeira etapa de implementação desenvolvida no trabalho foi a aquisição d
 	\label{fig:data_processing_pipeline}
 \end{figure}
 
-\section{Web Scrapping}
+\section{\textit{Web Scrapping}}
 
-As questões utilizadas para treinamento dos modelos classificatórios foram retiradas de um site preparatório para concursos públicos chamado “Rota dos concursos” (rotadosconcursos.com.br). Para esta tarefa, foi implementado um ruby script que simulava as requisições HTTP feitas por um navegador. Cada requisição realiza o \textit{download} de um arquivo HTML de uma página do site que contem exatamente uma questão de concurso público.
+As questões utilizadas para treinamento dos modelos classificatórios foram retiradas de um site preparatório para concursos públicos chamado “Rota dos concursos” (rotadosconcursos.com.br). Para esta tarefa, foi implementado um \textit{script} ruby que simulava as requisições HTTP feitas por um navegador. Cada requisição realiza o \textit{download} de um arquivo HTML de uma página do site que contem exatamente uma questão de concurso público.
 
 Devido à grande quantidade de questões, foi utilizado um serviço de servidores dedicados em nuvem para possibilitar as muitas horas de requisição. A quantidade de questões também impossibilitou a manipulação dos arquivos em um único diretório. Desta forma foi utilizado um esquema de subpastas enumeradas de 000 a 999 tornando a manipulação no sistema de arquivos tratável, pois os arquivos são uniformemente distribuídos nessas subpastas por meio de uma função de \textit{hash} simples. Além disso, como o gargalo são operações de entrada e saída (I/O \textit{bound}) nas requisições, foi utilizado \textit{multithreading} para otimizar o uso de CPU.
-    
+
 \section{Pré-Processamento}
 
 Após o download em formato HTML, o conteúdo de cada página teve de ser isolado em arquivos em formato JSON. Cada arquivo continha apenas os dados referentes a uma questão, de maneira a descartar as informações referentes ao \textit{layout} da página e manter os seguintes atributos:
@@ -31,7 +31,7 @@ Após o download em formato HTML, o conteúdo de cada página teve de ser isolad
 \item prova: Ano em que a prova foi aplicada;
 \item banca: Banca referente ao concurso público da questão;
 \item nivel: Nível de escolaridade utilizado como pré-requisito no concurso público em que questão foi obtida;
-\item answer: Alternatica correspondente a resposta correta caso a questão seja de múltipla escolha.
+\item answer: Alternativa correspondente a resposta correta caso a questão seja de múltipla escolha.
 \end{itemize}
 
 Ao término desse pré-processamento, obteve-se um total de mais de 500 mil arquivos JSON com questões.
@@ -59,4 +59,4 @@ Além disso, foram definidos alguns parâmetros para o construtor dessa classe, 
 
 Além disso, a API de dados também faz uso de cache do \textit{dataframe} base no formato de um arquivo csv para evitar a releitura das centenas de milhares de arquivos JSON sempre que for necessário criar um nova instância da classe.
 
-Finalmente, sobre os métodos oferecidos pela API de dados, pode-se destacar a existência de métodos que retornam estruturas com dados utilizados no treinamento como o enunciado de todas as questões contendo todos o caracteres possíveis ou apenas caracteres alfabéticos, o assunto de todas questões no formato de \textit{string} ou de \textit{one-hot-encoding}. 
+Finalmente, sobre os métodos oferecidos pela API de dados, pode-se destacar a existência de métodos que retornam estruturas com dados utilizados no treinamento como o enunciado de todas as questões e seus respectivos assuntos no formato de \textit{string} ou de \textit{one-hot-encoding}. 
