@@ -1,70 +1,54 @@
-%Demonstra como foi realizado o trabalho
-%• Pesquisas bibliográficas: sempre com as referências
-%• Modelagem
-%• Sistema gerado
-%• Testes de desempenho/avaliação
-\chapter{Fundamentação Teórica}
-\label{cap:methods}
+\chapter{Arquitetura da Solução}
+\label{chapter:Arquitetura}
 \noindent
 
-Aprendizado de máquina é um ramo da inteligência artificial na Ciência da Computação em que se faz uso de dados para o desenvolvimento de um algoritmo por meio de etapas de treinamento. Mais especificamente no aprendizado supervisionado, estuda-se um conjunto de dados rotulados na fase de treinamento para que o algoritmo treinado possa prever um rótulo de um dado inédito baseando-se nos padrões já estudados. Para a classificação de textos em assuntos, o aprendizado supervisionado é o mais utilizado, de maneira que os rótulos correspondem aos próprios assuntos dos textos a serem utilizados no treinamento.
-
-Contudo, uma dificuldade ao se trabalhar com um texto é o uso de uma representação computacional que seja facilmente interpretável pelos algoritmos de aprendizado de máquina. Por isso, são utilizadas representações específicas para esses algoritmos como Bag of Words e Word Embeddings que serão descritos nas seções a seguir. Posteriormente, pode-se aplicar algoritmos como, por exemplo, redes neurais que também serão descritas nas seções seguintes.
-
-\section{Bag of Words}
-%https://www3.nd.edu/~dchiang/teaching/nlp/2015/notes/chapter1v2.pdf
-%https://towardsdatascience.com/machine-learning-nlp-text-classification-using-scikit-learn-python-and-nltk-c52b92a7c73a
-
-Bag of words não se trata de um modelo de classificação por completo, mas sim de uma estratégia de representação do texto em que a sequência de palavras é desconsiderada. Dessa maneira, o texto é simplificado para uma lista de palavras distintas e a respectiva contagem de ocorrência de cada uma delas. A principal vantagem dessa estratégia é a sua simplicidade de representação computacional, sendo atrativa para a aplicação direta de algoritmos de aprendizado de máquina.
-
-Contudo, para se obter uma melhor eficiência dessa estratégia, pode ser necessário aplicar outras técnicas que mitiguem a perda de informação causada pelo \textit{bag of words}. Uma dessas técnicas é a remoção de palavras de parada (stop words), pois essas palavras são utilizadas apenas para a conexão de ideias em uma frase como preposições, artigos e conjunções e não contribuem como fonte de informação no texto. Além disso, as palavras vazias ocorrem com alta frequência e possuem destaque ilusório na representação colapsada do bag of words. Outra técnica que também pode ser empregada é a lematização (\textit{stemming}) que corresponde a remoção dos sufixos das palavras, pois estes fazem com que palavras que deveriam ser sinônimas na representação \textit{bag of words} sejam contabilizadas separadamente. Ao remover os sufixos como gênero, tempo e número, palavras que acrescentam a mesma informação ao texto terão suas respectivas contagens somadas em uma única palavra sem os sufixos. A figura \ref{fig:nl_ex} mostra um exemplo dessas etapas de pré-processamento.
+\section{Fluxo de atividades}
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[width=1\textwidth]{figures/nltp_example.png}
-	\caption{Etapas do processamento de linguagem natural}
-	\label{fig:nl_ex}
+	\includegraphics[width=1.1\textwidth]{figures/ActivityDiagram.png}
+	\caption{Diagrama de atividades}
+	\label{fig:ActivityDiagram}
 \end{figure}
 
-Após todas essas técnicas, pode-se extrair ainda a representação TF-IDF (\textit{term frequency-inverse document frequency}), \cite{InformationRetrievalBookChapter6}, de cada amostra de um conjunto de textos, trata-se de uma medida estatística para normalizar o peso das palavras. Nesse indicador, a relevância de uma palavra em determinado contexto é representada pelo número de vezes que a palavra nesse contexto dividido pelo número de vezes que ela aparece em todos os documentos que fazem parte do \textit{corpus} analisado. A figura \ref{fig:bow_ex} mostra um exemplo da representação de dois documentos conforme a modelagem \textit{bag of words}.
+Antes de se discutir detalhes técnicos da implementação, é interessante definir um fluxo de operações que serão realizadas pelo sistema. Isso permite uma melhor contextualização geral das funcionalidades a serem implementadas não só por quem participará da sua implementação, mas também por quem será seu usuário.
+
+Uma primeira observação sobre esse fluxo de atividades é que ele é posterior à fase de obtenção de dados descrita no capítulo \ref{chapter:ObtencaoBases}. A razão disso é porque a arquitetura descrita no presente capítulo independe da fonte de dados utilizada, buscando uma fácil portabilidade para outros contextos de classificação de texto.
+
+Todas as etapas a serem implementadas pelo sistema são descritas no diagrama de atividades da figura \ref{fig:ActivityDiagram}. Esse diagrama pode ser resumido em três estágios principais: uma fase inicial de preparação dos dados; uma segunda fase que define o modelo do classificador e executa as etapas que precedem o treinamento;  e uma fase final em que é realizado o treinamento do modelo especificado no estágio anterior assim como são coletadas métricas sobre sua performance.
+
+\section{Modelagem da Implementação}
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[width=0.7\textwidth]{figures/bag_of_words_example.png}
-	\caption{Exemplo de representação \textit{bag of words}}
-	\label{fig:bow_ex}
+	\includegraphics[width=1.15\textwidth]{figures/ClassDiagram.png}
+	\caption{Diagrama de classes}
+	\label{fig:ClassDiagram}
 \end{figure}
 
-\section{Word Embeddings}
+Nas implementações dos classificadores, existem várias etapas em comum conforme já ilustrado pela figura \ref{fig:ActivityDiagram}. Em virtude disso, buscou-se realizar uma implementação que satisfizesse requisitos de manutenibilidade e reusabilidade. Dessa forma, foi elaborada uma solução focada em uma hierarquia de classes que maximizasse o reúso de implementações entre os modelos conforme ilustra o diagrama de classes na figura \ref{fig:ClassDiagram}. 
 
-Word embedding é a representação de palavras de um vocabulário em um espaço n-dimensional de números reais. Isso permite que palavras que são usadas de maneira similar tenham representações similares, de maneira a capturar o significado de cada palavra de acordo com a sua posição no espaço n-dimensional. Cada palavra é mapeada a um vetor e os valores desse vetor são obtidos a partir de um treinamentos que, em geral, envolvem redes neurais como o skip-gram utilizado na implementação word2vec, \cite{DBLP:journals/corr/MikolovSCCD13}.
+Essa arquitetura modulariza as etapas do sistema. Um dos aspectos que se buscou dar destaque nessa modularização foi o processamento da fonte de dados, isso é feito de maneira isolada em uma classe específica que pode ser facilmente substituída por outra que implemente o carregamento de dados de outra fonte. No diagrama de classes da figura \ref{fig:ClassDiagram}, essa classe corresponderia a uma que substituiria a classe \hl{RotaDosConcursos}, mantendo a mesma interface. Para tanto, essa nova classe também deve herdar de \hl{DatasetDistributer}. Depois disso, bastaria passar um objeto dessa nova classe ao instanciar um objeto correspondente a um classificador genérico que é implementado pela classe hl{BaseModel}. Isso ocorre porque a classe \hl{BaseModel} trata o objeto correspondente aos dados no seu construtor apenas no nível da classe \hl{DatasetDistributer}.
 
-\section{Redes Neurais Artificiais}
+Quanto a implementação dos modelos, também trabalhou-se buscando uma modularidade para dar suporte a adição de novos classificadores. Antes no entanto, discutiremos qual o significado dos níveis da hierarquia de classes que implementa essa solução.
 
-Redes Neurais são uma classe de funções em que a sua formulação matemática foi vagamente inspirada em estruturas biológicas do cérebro. Na analogia biológica dessa formulação, essas funções podem ser representadas no formato de um grafo em que as estruturas básicas são chamadas neurônios.
+Primeiramente, parte-se da classe abstrata \hl{BaseModel} que, conforme já mencionado, implementa operações comuns a todos os modelos como métodos relacionados à exibição de resultados e à admissão de dados. Essa classe é então especializada de acordo com as duas estruturas de dados para a representação de texto em concordância com as definições do capítulo \ref{cap:methods} e também ilustradas no primeiro \textit{fork} da figura \ref{fig:ActivityDiagram}. Assim, o segundo nível dessa hierarquia é composto pelas classes \hl{BagOfWords} e \hl{WordEmbeddingModelKeras}.
+
+Em seguida, no caso de modelos que partem da representação \textit{Bag of Words}, especializa-se de acordo com o algoritmo classificador a ser utilizado, sendo este o último nível. Já para modelos baseados em \textit{Word Embedding}, esse é o penúltimo nível e corresponde ao segundo \textit{fork} (de cima para baixo) na figura \ref{fig:ActivityDiagram}. Vale ressaltar que apesar de somente duas abordagens para o uso da representação por \textit{Word Embedding} serem exploradas, a adição de mais uma versão seria simples graças ao isolamento dessa etapa em uma única classe que se integra ao restante da arquitetura por meio de herança. A última especialização do ramo referente a \textit{Word Embedding} define a topologia da rede neural implementada. Para os dois ramos, novos classificadores podem ser facilmente adicionados ao último nível devido a flexibilização dessa arquitetura modular. Contudo, há algumas ressalvas, a primeira delas é que esse projeto trabalha apenas com redes neurais para a representação \textit{Word Embedding}, assim o último nível é, conforme já foi dito, responsável apenas pela definição topológica. Além disso, a implementação foi todo feita em \textit{Python} e essa topologia deve ser feita utilizando a API \textit{Keras} do pacote \textit{Tensorflow} e o classificador utilizado na representação \textit{Bag of Words} deve seguir a interface do pacote \textit{Scikit-learn}.
+
+Por fim há ainda um conjunto de classes que trabalha a definição das métricas que são coletadas. As mesmas métricas são coletadas independentemente da representação numérica utilizada para o texto. Contudo, algumas especializações são feitas porque os recursos de visualização do \textit{Tensorboard}, com compatibilidade exclusiva para o pacote \textit{Tensorflow}, foram explorados somente para os modelos que partem da representação \textit{Word Embedding}.
+
+\section{Aspectos Práticos da Implementação}
+
+Um aspecto da implementação que foi de grande importância na viabilização da execução dos treinamentos foi a facilidade de se utilizar vários núcleos de processamento ao utilizar a biblioteca como \textit{scikit-learn}. Isso permitiu a paralelização utilizando vários núcleos de um servidor robusto do serviço AWS da \textit{Amazon} conforme ilustra a figura \ref{fig:paralelization_AWS}. Além disso, o pacote \textit{Tensorflow} abstrai o uso de GPUs em um alto nível, o que também foi explorado ao utilizar os serviços da AWS.
 
 \begin{figure}[!ht]
 	\centering
-	\includegraphics[width=0.6\textwidth]{figures/neuron.png}
-	\caption{Neurônio artificial}
-	\label{fig:neuron}
+	\includegraphics[width=0.6\textwidth]{figures/htop.png}
+	\caption{Uso das CPUs no servidor durante um dos treinamentos}
+	\label{fig:paralelization_AWS}
 \end{figure}
 
-Conforme a figura \ref{fig:neuron}, um neurônio artificial é uma função $y:\mathbb R^n \rightarrow \mathbb R$ com entrada $\vec x = <x_1,x_2,x_3,\dots,x_n>$ e saída $y = f(\sum\limits_{i=1}^n x_iw_i)$, em que $f$ é a chamada função de ativação, correspondendo tradicionalmente a função sigmoid, mas atualmente a função mais utilizada é a relu ($f(x) = max(0, x)$).
+Vale destacar que o uso dos serviços AWS foi completamente automatizado. Isso significa que foi implementado um \textit{script} que realiza as seguintes operações: definição de toda a configuração da máquina virtual; criação de uma nova instancia dessa máquina; realização do \textit{download} do conjunto de dados preparado conforme descrito no capítulo \ref{chapter:ObtencaoBases} que foi disponibilizado publicamente em um servidor de armazenamento também da \textit{Amazon}; realização do download do modelo de \textit{Word Embedding} disponibilizado como parte do trabalho do artigo \cite{DBLP:journals/corr/abs-1708-06025}; download do código do modelo implementado como parte do presente trabalho; execução do treinamento de um modelo selecionado; exportação das métricas para o armazenamento em nuvem \textit{S3} da \textit{Amazon}; terminação da instância da VM criada.
 
-Os parâmetros que definem a arquitetura de uma rede neural tradicional dentro do conjunto da classe de funções são chamados hiperparâmetros. Esses parâmetros definem a quantidade de neurônios e as conexões entre eles que são tradicionalmente organizadas segundo camadas totalmente conectadas.
-
-Uma característica que torna as redes neurais interessantes é o fato de elas atenderem ao Teorema da aproximação universal segundo \cite{HORNIK1991251}. Contudo, o que as tornam realmente especiais no contexto de aprendizado de máquinas é a maneira com que são encontrados os parâmetros para a aproximação de funções. Diferentemente da aproximação de funções diferenciáveis pelo teorema de Taylor por exemplo, existem heurísticas que permitem encontrar os parâmetros de uma rede neural para a aproximação da função a partir de amostras pontuais, i.e., dados, sem que seja necessário o conhecimento da função original como formulado no teorema de Taylor.
-
-Dessa maneira, além dos hiperparâmetros, há as duas seguintes categorias de parâmetros em uma rede neural: parâmetros treináveis que são escolhidos a partir de procedimentos de treinamento envolvendo dados para a aproximação de funções; parâmetros de entrada que correspondem aos da função que se deseja aproximar. Uma vez encontrados parâmetros treináveis para uma aproximação satisfatória, estes são fixados e utilizam-se os parâmetros de entrada para realizar previsões nas situações de interesse.
-
-Uma vez que a definição de parâmetros treináveis já foi realizada, pode-se retomar a análise das heurísticas que permitem determiná-los. Esse processo consiste em um algoritmo iterativo que minimiza uma função de custo baseada na comparação entre a saída da rede neural atual com dados de treinamento e os respectivos valores reais. Esse processo é chamado método do gradiente e, conforme o próprio nome diz, exige o cálculo do gradiente da função de custo em relação aos parâmetros treináveis e é viabilizado pelo algoritmo backpropagation por \cite{Rumelhart1986}. Atualmente, são utilizadas diversas técnicas para a otimização do método do gradiente \cite{DBLP:journals/corr/Ruder16}, envolvendo desde variações na forma como as variáveis são atualizadas no processo iterativo quanto como inicializar os parâmetros treináveis ou execuções em mini-batches.
-
-\subsection{Redes Neurais Convolucionais}
-Redes neurais convolucionais consistem em uma variação da arquitetura de redes neurais tradicionais em que parâmetros treináveis podem ser reutilizados em diferentes operações durante o cálculo de feedforward de uma rede neural. Isso permite o reconhecimento de um mesmo padrão em distintos subconjuntos dos dados de entrada, tornando esse tipo de arquitetura ideal para reconhecimento de objetos em imagens conforme originalmente descrito por \cite{LeCun1999}. Contudo, uma variação unidimensional da rede neural convolucional também pode ser útil no reconhecimento de padrões em textos com o auxílio de word embeddings.
-
-\subsection{Redes Neurais Recorrentes}
-
-Conforme ilustrado por \cite{ColahLSTM}, redes neurais recursivas são uma extensão das redes neurais tradicionais que visam permitir a representação de um estado de memória no processo de feedforward da rede. Isso é especialmente útil quando os dados de entrada dependem de uma sequência para possuírem coerência, como ocorre no caso de um texto. A extração máxima de informação de um texto só ocorre quando se leva em consideração a sequência das palavra, o que não é tratado no método bag of words por exemplo.
-
-A representação de estado de memória em uma rede neural é viabilizada por meio de uma célula, i.e., um conjunto de neurônios com operações que são aplicadas uma vez para cada elemento da sequência de um dado de entrada. Dessa maneira, além de haver um compartilhamento de parâmetros treináveis como nas redes neurais convolucionais, também há um estado armazenado nos neurônios da célula que são realimentados a essa mesma célula ao executar as operações envolvendo o elemento seguinte da sequência, o que dá origem ao nome recorrente.
+Por fim, visando a rastreabilidade das alterações do código durante o desenvolvimento e uma colaboração em equipe, todo o código foi versionado. O repositório pode ser acessado em: github.com/brunovcosta/pfc .

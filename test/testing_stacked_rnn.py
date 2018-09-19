@@ -16,14 +16,14 @@ rota_dos_concursos = RotaDosConcursos(
 
 model = StackedRNN(
     rota_dos_concursos,
-    n_features_per_word=sys.argv[1],
+    n_features_per_word=50,
     hyperparameters_file="default")
 
 model.summary(save_summary=True)
 
 model.fit(
     save_metrics=True,
-    save_checkpoints=True)
+    save_checkpoints=False)
 
 model.save_plots()
 model.inspect_mispredictions('val', 10)

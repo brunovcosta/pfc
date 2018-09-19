@@ -33,32 +33,23 @@
 \chapter{Introdução}
 \noindent
 
+A resolução de questões é parte do processo de aprendizado em qualquer área do conhecimento, pois ajuda na fixação do que foi estudado e faz com que o aluno interaja e consiga avaliar o conhecimento sobre determinado assunto. Apesar do elevado número de questões presentes na \textit{web}, uma parcela significativa se encontra dispersa, sem nenhum tipo de classificação, reduzindo seu valor de busca e sua possibilidade de utilização pelos estudantes. 
+
+A inexistência de um método efetivo de busca e seleção de questões não classificadas num universo de dados tão extenso quanto a web representa uma barreira no estudo e aprendizado do estudante importante, o que gera um estímulo para o solução do problema.
+
 \section{Motivação}
-Questões são parte fundamental do processo de aprendizado e sua classificação por assunto e dificuldade é de suma importância nas mais variadas aplicações educacionais.
+A classificação de questões por assunto e dificuldade é de suma importância nas mais variadas aplicações educacionais. Uma aplicação interessante desta técnica trata-se das ferramentas adaptativas, nas quais o estudante pode executar baterias de exercícios em série cujo conteúdo varia de acordo com os seus resultados, otimizando o seu aprendizado. Outra aplicação da classificação de questões é direcionar o estudo para um assunto específico que seja problemático para o estudante.
 
-Por meio dessa classificação, professores podem elaborar testes de maneira assistida e mais eficiente.
+Nos processos seletivos, as questões são as principais fontes de mensuração do conhecimento, e consistem, de modo geral, em textos e imagens justapostos, segregados em enunciado e alternativas. A recorrência nesta forma de avaliação permite a maior eficiência de métodos específicos de classificação quando comparados à abordagens em textos genéricos.
 
-Outra aplicação da classificação de questões trata das ferramentas adaptativas. Nesse tipo de ferramenta, estudantes podem executar baterias de exercícios em série cujo conteúdo varia de acordo com o desempenho de acerto otimizando o aprendizado.
+\section{Objetivos}
+Este trabalho tem como objetivos a implementação, teste e comparação das principais técnicas de classificação de texto aplicando-as em questões de concursos públicos.
 
-Questões são muito usadas como forma de avaliação de conhecimento em processos seletivos e sua maioria consiste de textos e imagens justapostos divididos entre enunciado e alternativas. A recorrência na forma permite que métodos específicos de classificação tenham mais eficiência que abordagens em texto genérico.
-
-\section{Objetivo}
-Este trabalho tem como objetivo a implementação, teste e comparação das principais técnicas de classificação de texto aplicando-as em questões de concursos públicos.
-
-Para fim de simplificação de escopo, serão consideradas apenas questões objetivas, que contenham alternativas, e retiradas de uma mesma fonte conforme explicitado no capítulo 3.
-
-Além disso, o escopo será limitado á classificação por assuntos. Dentro de um assunto a granularidade será limitada ao nível de área do conhecimento (ex: computação/cinema/medicina/direito), sem levar em consideração as diferenças entre matérias (ex: linguagens formais/inteligência artificial/mineração de dados).
-
-\section{Abordagem}
-A abordagem escolhida por este projeto foi a de obter uma base de dados de questões e tratá-la da maneira mais conveniente de modo a se adequar aos seus objetivos. Tal obtenção e tratamento são abordadas no capítulo 3.
-
-Com a base de dados, a próxima etapa é a de utilizar as principais técnicas de classificação de textos genéricos, descritas no capítulo 4, na classificação do assunto de suas questões. Nessa etapa, cada um dos métodos será otimizado para essa base de dados, validando suas arquiteturas e seus hiperparâmetros. Com esses resultados, é possível comparar a performance desses métodos.
-
-Com base nessa comparação, avalia-se a viabilidade de implementar um modelo unificado dos modelos que utilizará os resultados anteriores e determinará qual é a melhor previsão de assunto da questão (\textit{Ensemble learning}).
+Com os resultados encontrados, busca-se construir uma ferramenta que vise facilitar o teste de modelos de classificação de questões, além de ser possível classificar textos genéricos também, e que possui valores de referência dos modelos de aprendizado de máquina com o melhor desempenho atualmente.
 
 \section{Metodologia}
 \label{sec:metodology}
-O trabalho será dividido em seis etapas conforme a figura \ref{fig:fluxogram}.
+O trabalho será dividido em 4 etapas conforme a figura \ref{fig:fluxogram}.
 
 \begin{figure}[!ht]
   \centering
@@ -70,46 +61,47 @@ O trabalho será dividido em seis etapas conforme a figura \ref{fig:fluxogram}.
     \node (n2) [block, below of=n1] {Tratamento};
     \node (n3) [block, below of=n2] {Implementação};
     \node (n4) [block, below of=n3] {Análise};
-    \node (n5) [block, below of=n4] {Desenvolvimento};
-    \node (n6) [block, below of=n5] {Avaliação};
 
     \draw [->] (n1) -- (n2);
     \draw [->] (n2) -- (n3);
     \draw [->] (n3) -- (n4);
-    \draw [->] (n4) -- (n5);
-    \draw [->] (n5) -- (n6);
     
   \end{tikzpicture}
   \caption{Fluxograma de trabalho}
   \label{fig:fluxogram}
 \end{figure}
 
-\subsection{\textit{Crawler}}
-A primeira etapa do trabalho corresponde à obtenção de dados para serem utilizados nos algoritmos de aprendizado de máquina. Isso é feito a partir de \textit{Web scraping} de questões de concursos públicos já rotuladas com os seus respectivos assuntos.
-\subsection{Tratamento}
-Em seguida, há uma fase de processamento de dados que remove inconsistências e prepara uma interface ideal para os algoritmos que serão aplicados posteriormente.
-\subsection{Implementação}
-A terceira fase consiste na implementação de alguns modelos consagrados de classificação genérica de texto no conjunto de dados em questão.
-\subsection{Análise}
-A seguir, será feita uma análise de desempenho para cada algoritmo que poderá resultar na variação de seus hiperparâmetros implementados e tratamento do conjunto de dados.
-\subsection{Desenvolvimento}
-\label{subsec:desenvolvimento}
-Da análise obtida na etapa anterior, seleciona-se a técnica de melhor performance como central do projeto ou desenvolve-se uma técnica híbrida baseada em \textit{ensemble learning} dos modelos anteriores.
-\subsection{Avaliação}
-\label{subsec:avaliacao}
-Por fim, os resultados obtidos serão avaliados e contrastados com os outros modelos de classificação de texto para a aferição de alcance dos objetivos.
+A primeira etapa do trabalho corresponde ao \textit{crawler}, à obtenção de dados, para serem utilizados nos algoritmos de aprendizado de máquina. Isso é feito a partir de \textit{Web scraping} de questões de concursos públicos já rotuladas com os seus respectivos assuntos.
+
+Para fim de simplificação de escopo, serão consideradas apenas questões objetivas, que contenham alternativas, e retiradas de uma único fonte, o site Rota dos Concursos, conforme será detalhado mais adiante no capítulo \ref{chapter:ObtencaoBases}.
+
+Com esses dados, há a fase de tratamento e uma fase de processamento de dados, que remove inconsistências e prepara uma interface ideal para os algoritmos que serão aplicados posteriormente, filtrando os campos das questões que serão utilizados para a classificação.
+
+A terceira fase consiste na implementação dos modelos de aprendizado de máquina para a classificação de texto das questões. Serão utilizados diversos classificadores para cada modelo de representação de texto, que serão abordados posteriormente nesse trabalho.
+
+Nessa etapa, cada um dos métodos será otimizado para essa base de dados, validando suas arquiteturas e seus hiperparâmetros. Com esses resultados, é possível comparar a performance desses métodos.
+
+Com base nessa comparação, avalia-se a viabilidade de implementar um modelo unificado dos modelos que utilizará os resultados anteriores e determinará qual é a melhor previsão de assunto da questão (\textit{Ensemble learning}).
+
+O escopo será limitado à classificação por assuntos. Dentro destes, a granularidade será limitada ao nível de área do conhecimento, como por exemplo a computação, sem considerar as disciplinas contidas nessa área, como inteligência artificial e mineração de dados.
+
+A seguir, será feita uma análise de desempenho para cada modelo que pode resultar na variação de seus hiperparâmetros implementados e tratamento do conjunto de dados. Os resultados obtidos serão comparados, obtendo-se o algoritmo mais preciso para a classificação de questões.
 
 \section{Organização}
-Sobre os capítulos subsequentes a seguinte distribuição de conteúdo:
+Sobre os capítulos subsequentes, apresenta-se a seguinte distribuição de conteúdo:
 \begin{itemize}
-\item Capítulo \ref{trabalhosRelacionados} - Trabalhos relacionados:
-exposição de trabalhos relacionados ao tema de classificação de texto;
-\item Capítulo \ref{chapter:ObtencaoBases} - Obtenção da base de dados:
-metodologia utilizada para obtenção e processamento da base de dados utilizada como referência no projeto;
 \item Capítulo \ref{cap:methods} - Fundamentação Teórica:
 descrição dos principais conceitos utilizados em cada um dos algoritmos de classificação que serão implementados;
-\item Capítulo \ref{chapter:implementacaoResultados} - Implementação e Resultados:
-descrição, metodologia de implementação e resultados de cada um dos algoritmos implementados;
+\item Capítulo \ref{chapter:ObtencaoBases} - Obtenção da base de dados:
+metodologia utilizada para obtenção e processamento da base de dados utilizada como referência no projeto;
+\item Capítulo \ref{chapter:Arquitetura} - Arquitetura da Solução:
+exposição da arquitetura feita para esse projeto, incluindo o diagrama de atividades e a modelagem de implementação;
+\item Capítulo \ref{chapter:implementacaoResultados} - Seleção do Conjunto de Dados e dos Modelos:
+tópicos de discussão a respeito do conjunto de dados e dos modelos selecionados para o desenvolvimento da ferramenta de classificação;
+\item Capítulo \ref{bow_implementation} - Modelos baseados em \textit{Bag of Words}:
+descrição, metodologia de implementação e resultados de cada um dos algoritmos baseados em \textit{bag of words};
+\item Capítulo \ref{We_implementation} - Modelos baseados em \textit{Word Embedding}:
+descrição, metodologia de implementação e resultados de cada um dos algoritmos baseados em \textit{word embedding};
 \item Capítulo \ref{chapter:conclusao} - Comparação e conclusão:
 comparação dos resultados entre diferentes modelos e algoritmos implementados no capítulo anterior.
 \end{itemize}
