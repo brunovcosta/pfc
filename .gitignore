@@ -13,6 +13,7 @@ __pycache__/
 # Data Files
 *.csv
 **/rawData/*
+*.tar
 
 # Mac files
 .DS_Store
