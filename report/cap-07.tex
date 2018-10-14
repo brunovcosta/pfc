@@ -104,7 +104,7 @@ Este modelo se trata da estrutura tradicional de uma rede neural recorrente e po
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=1.0\textwidth]{figures/lstm_confusion.png}
-	\caption{Matriz de confusão normalizada do modelo RNN simples com células LSTM e 50 dimensões de \textit{embedding} }
+	\caption{Matriz de confusão normalizada do modelo RNN simples com células LSTM e 50 dimensões de \textit{embedding} no conjunto de testes}
 	\label{fig:LSTM_CONF}
 \end{figure}
 
@@ -118,11 +118,18 @@ Este modelo se trata da estrutura tradicional de uma rede neural recorrente e po
 \subsection{\textit{Stacked} RNN com células LSTM}
 
 Uma sofisticação do modelo descrito na seção \ref{section:RNN_simple} é a adição de mais uma camada com uma segunda célula LSTM conforme ilustra a figura \ref{fig:StackedRNN}. Assim, após o processamento de cada entrada
-x\textsubscript{t}, a saída correspondente h\textsubscript{t}, conforme a figura \ref{fig:LSTM}, não seria descartada, mas sim repassada para uma camada de \textit{dropout} cujo resultado é usado como entrada para a segunda célula LSTM.
+x\textsubscript{t}, a saída correspondente h\textsubscript{t}, conforme a figura \ref{fig:LSTM}, não seria descartada, mas sim repassada para uma camada de \textit{dropout} cujo resultado é usado como entrada para a segunda célula LSTM. Esse modelo foi o que obteve a melhor performance em acurácia conforme detalhado pela matriz de confusão na figura \ref{fig:StackedRNN_CONF}
 
 \begin{figure}[!ht]
 	\centering
 	\includegraphics[width=1.0\textwidth]{figures/StackedRNN.png}
 	\caption{Diagrama de uma topologia do tipo \textit{stacked} RNN (fonte: Coursera)}
 	\label{fig:StackedRNN}
+\end{figure}
+
+\begin{figure}[!ht]
+	\centering
+	\includegraphics[width=1.0\textwidth]{figures/StackedRNN_20180918165422_100dimensions_default_-_Confusion_matrix_normalized_-_test.png}
+	\caption{Matriz de confusão normalizada do modelo \textit{Stacked} RNN e 100 dimensões de \textit{embedding} no conjunto de testes}
+	\label{fig:StackedRNN_CONF}
 \end{figure}

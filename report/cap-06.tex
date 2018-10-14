@@ -1,6 +1,6 @@
 \chapter{Modelos baseados em \textit{Bag of Words}} \label{bow_implementation}
 
-Para a representação \textit{bag of words}, foram utilizados algoritmos classificadores tradicionais conforme descrito em \cite{InformationRetrievalBook}.Eles atuam como uma referência de \textit{benchmarking} para os modelos mais modernos que serão discutidos na seção \ref{We_implementation}.
+Para a representação \textit{bag of words}, foram utilizados algoritmos classificadores tradicionais conforme descrito em \cite{InformationRetrievalBook}. Eles atuam como uma referência de \textit{benchmarking} para os modelos mais modernos que serão discutidos na seção \ref{We_implementation}.
 
 Como etapas de preparação da estrutura de dados a partir da representação \textit{bag of words}, foram utilizadas as seguintes técnicas de processamento de linguagem natural do pacote NLTK (\textit{Natural Language Toolkit}), que possui suporte para a linguagem português brasileiro: a separação da frase em palavras, deixando-as com letra minúscula; a remoção de \textit{stopwords} (palavras de parada) desse conjunto de palavras, apresentadas no apêndice \ref{stopwords}; e a lematização das palavras utilizando \textit{RSLPStemmer} (Removedor de Sufixos da Língua Portuguesa) (\cite{RSLPStemmer}). Após a aplicação dessas técnicas, é utilizado TF-IDF por meio da implementação \textit{TfidfTransformer} da biblioteca \textit{scikit-learn}.
 

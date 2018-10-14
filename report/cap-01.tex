@@ -40,12 +40,12 @@ A inexistência de um método efetivo de busca e seleção de questões não cla
 \section{Motivação}
 A classificação de questões por assunto e dificuldade é de suma importância nas mais variadas aplicações educacionais. Uma aplicação interessante desta técnica trata-se das ferramentas adaptativas, nas quais o estudante pode executar baterias de exercícios em série cujo conteúdo varia de acordo com os seus resultados, otimizando o seu aprendizado. Outra aplicação da classificação de questões é direcionar o estudo para um assunto específico que seja problemático para o estudante.
 
-Nos processos seletivos, as questões são as principais fontes de mensuração do conhecimento, e consistem, de modo geral, em textos e imagens justapostos, segregados em enunciado e alternativas. A recorrência nesta forma de avaliação permite a maior eficiência de métodos específicos de classificação quando comparados à abordagens em textos genéricos.
+Nos processos seletivos, as questões são as principais fontes de mensuração do conhecimento, e consistem, de modo geral, em textos e imagens justapostos, segregados em enunciado e alternativas. A recorrência nesta forma de avaliação permite a maior eficiência de métodos específicos de classificação quando comparados a abordagens em textos genéricos.
 
 \section{Objetivos}
 Este trabalho tem como objetivos a implementação, teste e comparação das principais técnicas de classificação de texto aplicando-as em questões de concursos públicos.
 
-Com os resultados encontrados, busca-se construir uma ferramenta que vise facilitar o teste de modelos de classificação de questões, além de ser possível classificar textos genéricos também, e que possui valores de referência dos modelos de aprendizado de máquina com o melhor desempenho atualmente.
+Com os resultados encontrados, busca-se construir uma ferramenta que vise facilitar o teste de modelos de classificação de questões, além de ser possível classificar textos genéricos.
 
 \section{Metodologia}
 \label{sec:metodology}
@@ -73,9 +73,9 @@ O trabalho será dividido em 4 etapas conforme a figura \ref{fig:fluxogram}.
 
 A primeira etapa do trabalho corresponde ao \textit{crawler}, à obtenção de dados, para serem utilizados nos algoritmos de aprendizado de máquina. Isso é feito a partir de \textit{Web scraping} de questões de concursos públicos já rotuladas com os seus respectivos assuntos.
 
-Para fim de simplificação de escopo, serão consideradas apenas questões objetivas, que contenham alternativas, e retiradas de uma único fonte, o site Rota dos Concursos, conforme será detalhado mais adiante no capítulo \ref{chapter:ObtencaoBases}.
+Para fim de simplificação de escopo, serão consideradas apenas questões objetivas, que contenham alternativas, e retiradas de uma única fonte, o site Rota dos Concursos, conforme será detalhado mais adiante no capítulo \ref{chapter:ObtencaoBases}.
 
-Com esses dados, há a fase de tratamento e uma fase de processamento de dados, que remove inconsistências e prepara uma interface ideal para os algoritmos que serão aplicados posteriormente, filtrando os campos das questões que serão utilizados para a classificação.
+Com esses dados, há a fase de tratamento e uma fase de processamento de dados, que remove inconsistências e prepara uma interface adequada para os algoritmos que serão aplicados posteriormente, filtrando os campos das questões que serão utilizados para a classificação.
 
 A terceira fase consiste na implementação dos modelos de aprendizado de máquina para a classificação de texto das questões. Serão utilizados diversos classificadores para cada modelo de representação de texto, que serão abordados posteriormente nesse trabalho.
 
